@@ -16,13 +16,15 @@
     display: flex;
     height: 100vh;
     width: 100vw;
-    background: #3b3b3b;
+    background-color: #fff;
+    z-index: 1;
     .main-layout-left {
       width: 240px;
       height: 100%;
     }
     // 右侧内容区域可以自动延展至剩余空间
     .main-layout-right {
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: stretch; // 从左到右延展

@@ -11,6 +11,10 @@ const routes = [
     children: [
       {
         path: '',
+        component: () => import('../views/welcome/welcomePage.vue')
+      },
+      {
+        path: 'welcome',
         component: () => import('../views/welcome/welcomePage.vue') // Adjust the path as necessary
       },
       {

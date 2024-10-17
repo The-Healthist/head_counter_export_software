@@ -15,6 +15,7 @@
     height: 100%;
     align-items: center;
     position: relative;
+    background-color: #3b3b3b;
 
     .welcome-page-content {
       margin-left: 58px;
