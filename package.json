@@ -25,6 +25,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "electron-updater": "^6.1.7",
     "pinia": "^2.2.4",
+    "uuid": "^10.0.0",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
