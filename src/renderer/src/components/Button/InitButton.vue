@@ -14,6 +14,7 @@
     align-items: center;
     gap: 10px;
     border: 2px solid #333;
+    cursor: pointer;
 
     color: #333;
     font-family: Inter;

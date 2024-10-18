@@ -55,12 +55,14 @@
         </div>
       </div>
       <div class="batch-main-button">
-        <InitButton>
+        <InitButton @click="openRenewInitDialog">
           <template #label>INITIALIZE</template>
         </InitButton>
       </div>
     </div>
   </div>
+  <NoDeviceDialog v-model="isNoDeviceDialogVisible" />
+  <RenewInitDialog v-model="isRenewInitDialogVisible" />
 </template>
 
 <script setup lang="ts">
@@ -69,15 +71,17 @@
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
   import InitButton from '@renderer/components/Button/InitButton.vue'
+  import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
+  import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
 
-  // Generate UUID
+  // 生成UUID
   const uuid = ref(uuidv4())
 
-  // Detected Device Status Logic
+  // 检测设备状态逻辑
   const detectedDeviceStatus = ref('New device')
   const detectedDevice = ref('COM1 serial')
 
-  // Calculate current status CSS class
+  // 计算当前状态对应的CSS类
   const statusClass = computed(() => {
     switch (detectedDeviceStatus.value) {
       case 'New device':
@@ -91,7 +95,7 @@
     }
   })
 
-  // 更新设备状态
+  // 更新状态的函数
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
@@ -101,7 +105,18 @@
     }
   }
 
-  // Example usage (You can replace this with actual logic)
+  // 控制弹窗可见性的状态
+  const isNoDeviceDialogVisible = ref(false)
+  function openNoDeviceDialog() {
+    isNoDeviceDialogVisible.value = true
+  }
+
+  const isRenewInitDialogVisible = ref(false)
+  function openRenewInitDialog() {
+    isRenewInitDialogVisible.value = true
+  }
+
+  // 示例用法（您可以根据实际逻辑替换）
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)
