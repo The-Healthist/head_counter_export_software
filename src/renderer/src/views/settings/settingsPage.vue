@@ -4,24 +4,24 @@
       <template #batch-mode-text>Batch Mode</template>
     </ModeSwitchButton>
     <div class="settings-main">
-      <div class="settings-main-form">
+      <div class="form">
         <!-- Printer Item -->
-        <div class="settings-main-item printer-item">
-          <div class="settings-main-item-right">
+        <div class="item printer-item">
+          <div class="item-right">
             <FormSelectButton>
               <template #form-select-button-label>Select Printer...</template>
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="Select Icon" />
           </div>
-          <div class="settings-main-item-label">Printer</div>
+          <div class="item-label">Printer</div>
         </div>
 
         <!-- Support Item -->
-        <div class="settings-main-item support-item">
-          <div class="settings-main-item-right">
+        <div class="item support-item">
+          <div class="item-right">
             <div class="form-normal-text">dreamskyll@foxmail.com</div>
           </div>
-          <div class="settings-main-item-label">Support</div>
+          <div class="item-label">Support</div>
         </div>
       </div>
     </div>
@@ -37,15 +37,15 @@
 
   // 控制弹窗可见性的状态
   const isNoDeviceDialogVisible = ref(false)
-  function openNoDeviceDialog() {
-    isNoDeviceDialogVisible.value = true
-  }
+  // function openNoDeviceDialog() {
+  //   isNoDeviceDialogVisible.value = true
+  // }
 
-  const isSaveSettingsDialogVisible = ref(false)
-  function saveSettings() {
-    // 这里可以添加保存设置的逻辑，比如表单验证和提交
-    isSaveSettingsDialogVisible.value = true
-  }
+  // const isSaveSettingsDialogVisible = ref(false)
+  // function saveSettings() {
+  //   // 这里可以添加保存设置的逻辑，比如表单验证和提交
+  //   isSaveSettingsDialogVisible.value = true
+  // }
 </script>
 
 <style scoped lang="scss">
@@ -72,14 +72,14 @@
       gap: 40px;
     }
 
-    .settings-main-form {
+    .form {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 10px;
       align-self: stretch;
 
-      .settings-main-item {
+      .item {
         display: flex;
         align-items: center;
         flex-direction: row-reverse;
@@ -146,7 +146,7 @@
       line-height: normal;
     }
 
-    .settings-main-button {
+    .button {
       display: flex;
       width: 184px;
       height: 40px;

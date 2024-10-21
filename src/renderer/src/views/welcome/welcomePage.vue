@@ -2,8 +2,8 @@
   <div class="welcome-page">
     <div class="welcome-page-content">
       <img src="../../assets/welcome/welcome.svg" alt="welcome" />
-      <div class="welcome-page-content-welcome-cn">欢迎使用</div>
-      <div class="welcome-page-content-welcome-en">Welcome</div>
+      <div class="welcome-cn">欢迎使用</div>
+      <div class="welcome-en">Welcome</div>
     </div>
   </div>
 </template>
@@ -22,7 +22,7 @@
       width: 754px;
       height: 621px;
     }
-    .welcome-page-content-welcome-cn {
+    .welcome-cn {
       position: fixed;
       top: 360px;
       // left: 935px;
@@ -37,7 +37,7 @@
       font-weight: 200;
       line-height: normal;
     }
-    .welcome-page-content-welcome-en {
+    .welcome-en {
       position: fixed;
       top: 301px;
       // left: 722px;

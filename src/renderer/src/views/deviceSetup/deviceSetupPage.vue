@@ -1,6 +1,6 @@
 <template>
   <div class="setup-page">
-    <ModeSwitchButton>
+    <ModeSwitchButton @click="navigateTo('/deviceSetupBM')">
       <template #batch-mode-text>Batch Mode</template>
     </ModeSwitchButton>
     <div class="batch-main">
@@ -75,6 +75,16 @@
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  // to batch mode
+  function navigateTo(path: string) {
+    localStorage.setItem('deviceSetupMode', 'batch')
+    router.push(path)
+    console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
+  }
 
   // 生成UUID
   const uuid = ref(uuidv4())
@@ -108,6 +118,7 @@
   }
 
   // 控制弹窗可见性的状态
+  // TODO: 打开没检测到设备的弹窗
   const isNoDeviceDialogVisible = ref(false)
   function openNoDeviceDialog() {
     isNoDeviceDialogVisible.value = true

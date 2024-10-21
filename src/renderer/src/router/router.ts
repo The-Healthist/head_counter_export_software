@@ -28,6 +28,14 @@ const routes = [
       {
         path: 'settings',
         component: () => import('../views/settings/settingsPage.vue')
+      },
+      {
+        path: 'dataExportBM',
+        component: () => import('../views/dataExport/dataExportBMPage.vue')
+      },
+      {
+        path: 'deviceSetupBM',
+        component: () => import('../views/deviceSetup/deviceSetupBMPage.vue')
       }
     ]
   }

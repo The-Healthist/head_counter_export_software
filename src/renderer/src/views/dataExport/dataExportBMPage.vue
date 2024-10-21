@@ -1,10 +1,21 @@
 <template>
   <div class="data-export-page">
-    <ModeSwitchButton @click="navigateTo('/dataExportBM')">
-      <template #batch-mode-text>Batch Mode</template>
+    <ModeSwitchButton @click="navigateTo('/dataExport')">
+      <template #batch-mode-text>Single Mode</template>
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
+        <div class="batch-main-item">
+          <div class="batch-main-item-right">
+            <FormSelectButton>
+              <template #form-select-button-label>Select Month...</template>
+            </FormSelectButton>
+            <img src="@renderer/assets/form/select.svg" alt="" />
+          </div>
+          <div class="batch-main-item-label">Month</div>
+        </div>
+        
+
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
@@ -43,15 +54,7 @@
           </div>
           <div class="batch-main-item-label">Placement Toilet</div>
         </div>
-        <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Month...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
-          <div class="batch-main-item-label">Month</div>
-        </div>
+
       </div>
       <div class="batch-main-button">
         <InitButton @click="openRenewInitDialog">
@@ -76,9 +79,9 @@
 
   const router = useRouter()
 
-  // to batch mode
+  // to single mode
   function navigateTo(path: string) {
-    localStorage.setItem('dataExportMode', 'batch')
+    localStorage.setItem('dataExportMode', 'single')
     router.push(path)
     console.log('localStorage.getItem(dataExportMode)', localStorage.getItem('dataExportMode'))
   }

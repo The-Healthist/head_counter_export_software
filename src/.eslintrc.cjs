@@ -32,8 +32,9 @@ module.exports = {
   rules: {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off',
-    'no-unused-vars': 'off',
+    'no-unused-expressions': 'off',
+    '@typescript-eslint/no-unused-expressions': 'error',
     'import/no-unresolved': 'warn',
-    'prettier/prettier': 'warn' // 添加 Prettier 规则
+    'prettier/prettier': 'warn' 
   }
 }

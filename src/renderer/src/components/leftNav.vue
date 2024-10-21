@@ -2,8 +2,8 @@
   <div
     :class="{
       'left-nav': true,
-      'left-nav-nowelcome': currentRoute !== '/welcome',
-      'left-nav-welcome': currentRoute === '/welcome' || currentRoute === '/'
+      'left-nav-nowelcome': currentRoute !== '/welcome' && currentRoute !== '/', //如果不是welcome页面
+      'left-nav-welcome': currentRoute === '/welcome' || currentRoute === '/' //如果是welcome页面
     }"
   >
     <!-- <div
@@ -17,30 +17,40 @@
     >
       Welcome
     </div> -->
+    <!-- deviceSetup -->
     <div
       :class="{
         'left-nav-item': true,
-        'left-nav-item-active': currentRoute === '/devicesetup',
+        'left-nav-item-active':
+          currentRoute === '/deviceSetup' || currentRoute === '/deviceSetupBM',
         'left-nav-item-inactive':
-          currentRoute !== '/devicesetup' && currentRoute !== '/welcome' && currentRoute !== '/',
+          currentRoute !== '/deviceSetup' &&
+          currentRoute !== '/deviceSetupBM' &&
+          currentRoute !== '/welcome' &&
+          currentRoute !== '/',
         'left-nav-item-welcome': currentRoute === '/welcome' || currentRoute === '/'
       }"
-      @click="navigateTo('/devicesetup')"
+      @click="navigateTo('/deviceSetup')"
     >
       Device Setup
     </div>
+    <!-- dataExport -->
     <div
       :class="{
         'left-nav-item': true,
-        'left-nav-item-active': currentRoute === '/dataexport',
+        'left-nav-item-active': currentRoute === '/dataExport' || currentRoute === '/dataExportBM',
         'left-nav-item-inactive':
-          currentRoute !== '/dataexport' && currentRoute !== '/welcome' && currentRoute !== '/',
+          currentRoute !== '/dataExport' &&
+          currentRoute !== '/dataExportBM' &&
+          currentRoute !== '/welcome' &&
+          currentRoute !== '/',
         'left-nav-item-welcome': currentRoute === '/welcome' || currentRoute === '/'
       }"
-      @click="navigateTo('/dataexport')"
+      @click="navigateTo('/dataExport')"
     >
       Data Export
     </div>
+    <!-- settings -->
     <div
       :class="{
         'left-nav-item': true,
@@ -64,9 +74,29 @@
   const currentRoute = ref(router.currentRoute.value.path)
 
   const navigateTo = (path: string) => {
-    router.push(path)
-    currentRoute.value = path
-    console.log(currentRoute.value)
+    console.log(`Navigating to ${path}`)
+
+    let modePath = ''
+    // deviceSetup
+    if (path.includes('deviceSetup')) {
+      const mode = localStorage.getItem('deviceSetupMode')
+      console.log('Device Setup Mode:', mode)
+      modePath = mode === 'batch' ? '/deviceSetupBM' : '/deviceSetup'
+    }
+    // dataExport
+    else if (path.includes('dataExport')) {
+      const mode = localStorage.getItem('dataExportMode')
+      console.log('Data Export Mode:', mode)
+      modePath = mode === 'batch' ? '/dataExportBM' : '/dataExport'
+    }
+
+    // router goto
+    if (modePath) {
+      router.push(modePath)
+    } else {
+    // settings
+      router.push(path)
+    }
   }
 
   watch(

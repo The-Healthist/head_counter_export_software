@@ -1,19 +1,43 @@
 <template>
-  <div class="data-export-page">
-    <ModeSwitchButton @click="navigateTo('/dataExportBM')">
-      <template #batch-mode-text>Batch Mode</template>
+  <div class="setup-page">
+    <ModeSwitchButton @click="navigateTo('/deviceSetup')">
+      <template #batch-mode-text>Single Mode</template>
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
+        <!-- 月份 -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
-              <template #form-select-button-label>Select...</template>
+              <template #form-select-button-label>Select Month...</template>
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="" />
           </div>
-          <div class="batch-main-item-label">Data Path</div>
+          <div class="batch-main-item-label">Month</div>
         </div>
+        <!-- 报告间隔 -->
+        <div class="batch-main-item">
+          <div class="batch-main-item-right">
+            <FormSelectButton>
+              <template #form-select-button-label>Select Interval...</template>
+            </FormSelectButton>
+            <img src="@renderer/assets/form/select.svg" alt="" />
+          </div>
+          <div class="batch-main-item-label">Report Interval</div>
+        </div>
+
+        
+        <div class="batch-main-item">
+          <div class="batch-main-item-right" @click="selectToilet">
+            <FormSelectButton>
+              <template #form-select-button-label>Select Toilet...</template>
+            </FormSelectButton>
+            <img src="@renderer/assets/form/select.svg" alt="" />
+          </div>
+          <div class="batch-main-item-label">Toilets</div>
+        </div>
+
+        <!-- 检测到的设备 -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
@@ -31,27 +55,13 @@
               {{ uuid }}
             </div>
           </div>
-          <div class="batch-main-item-label">Device UUID</div>
+          <!-- TODO: 让文本可以复制 -->
+          <div class="batch-main-item-label">Random UUID</div>
         </div>
+ 
 
-        <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Toilet...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
-          <div class="batch-main-item-label">Placement Toilet</div>
-        </div>
-        <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Month...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
-          <div class="batch-main-item-label">Month</div>
-        </div>
+
+
       </div>
       <div class="batch-main-button">
         <InitButton @click="openRenewInitDialog">
@@ -72,15 +82,15 @@
   import InitButton from '@renderer/components/Button/InitButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
+  import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
 
   const router = useRouter()
-
-  // to batch mode
+  // to single mode
   function navigateTo(path: string) {
-    localStorage.setItem('dataExportMode', 'batch')
+    localStorage.setItem('deviceSetupMode', 'single')
     router.push(path)
-    console.log('localStorage.getItem(dataExportMode)', localStorage.getItem('dataExportMode'))
+    console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
   }
 
   // 生成UUID
@@ -115,6 +125,7 @@
   }
 
   // 控制弹窗可见性的状态
+  // TODO: 打开没检测到设备的弹窗
   const isNoDeviceDialogVisible = ref(false)
   function openNoDeviceDialog() {
     isNoDeviceDialogVisible.value = true
@@ -125,6 +136,15 @@
     isRenewInitDialogVisible.value = true
   }
 
+  const toilets = ref([])
+  const selectToilet = async () => {
+    await axios.get('/api/toilets').then((res) => {
+      toilets.value = res.data.data
+      console.log(toilets.value)
+    })
+    console.log('selectToilet')
+  }
+
   // 示例用法（您可以根据实际逻辑替换）
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
@@ -132,7 +152,7 @@
 </script>
 
 <style scoped lang="scss">
-  .data-export-page {
+  .setup-page {
     width: 100%;
     height: 100%;
     display: flex;
@@ -188,6 +208,9 @@
           gap: 10px;
           flex-shrink: 0;
           border-radius: 3px;
+          img {
+            cursor: pointer;
+          }
         }
       }
     }
