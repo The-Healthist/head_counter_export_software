@@ -5,7 +5,8 @@
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
-        <!-- 月份 -->
+
+        <!-- Month -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
@@ -15,7 +16,8 @@
           </div>
           <div class="batch-main-item-label">Month</div>
         </div>
-        <!-- 报告间隔 -->
+
+        <!-- Report Interval -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
@@ -26,18 +28,23 @@
           <div class="batch-main-item-label">Report Interval</div>
         </div>
 
-        
+        <!-- Toilet -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right" @click="selectToilet">
+          <div v-if="toilets.length <= 0" class="batch-main-item-right" @click="selectToilet">
             <FormSelectButton>
               <template #form-select-button-label>Select Toilet...</template>
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="" />
           </div>
+          <div v-else class=" batch-main-item-right batch-main-item-right-selects-box">
+            <div @click="selectCurrentToilet(toilet)" v-for="toilet in toilets" :key="toilet"  class="batch-main-item-right-selects-box-item">
+              {{ toilet }}
+            </div>
+          </div>
           <div class="batch-main-item-label">Toilets</div>
         </div>
 
-        <!-- 检测到的设备 -->
+        <!-- Detected Device -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
@@ -47,8 +54,10 @@
               {{ detectedDeviceStatus }}
             </div>
           </div>
-          <div class="batch-main-item-label">Detected Device</div>
+          <div class="batch-main-item-label">Current Device</div>
         </div>
+
+        <!-- Current UUID -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
@@ -56,10 +65,19 @@
             </div>
           </div>
           <!-- TODO: 让文本可以复制 -->
-          <div class="batch-main-item-label">Random UUID</div>
+          <div class="batch-main-item-label">Current UUID</div>
         </div>
  
 
+        <!-- Current Toilet -->
+        <div class="batch-main-item">
+          <div class="batch-main-item-right">
+            <div class="form-normal-text current-toilet">
+              {{ selectedToilet }}
+            </div>
+          </div>
+          <div class="batch-main-item-label">Current Toilet</div>
+        </div>
 
 
       </div>
@@ -145,6 +163,11 @@
     console.log('selectToilet')
   }
 
+  const selectedToilet = ref('')
+  const selectCurrentToilet = (toilet: string) => {
+    selectedToilet.value = toilet
+  } 
+
   // 示例用法（您可以根据实际逻辑替换）
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
@@ -211,6 +234,43 @@
           img {
             cursor: pointer;
           }
+          .current-toilet {
+            overflow-x: hidden;
+            white-space: nowrap;
+          }
+        }
+        &-right-selects-box {
+          position: relative;
+          border-radius: 3px 0px 0px 3px;
+          border: 1px solid #ccc;
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          display: flex;
+          width: 372px;
+          height: 219px;
+          padding: 10px 20px 10px 0px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+        &-right-selects-box-item {
+          display: flex;
+          width: 120%;
+          height: auto;
+          padding-left: 15px;
+          cursor: pointer;
+          &:hover {
+            background-color: #EEE;
+          }
+          white-space: nowrap;
+          color: #333;
+          font-family: Inter;
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
         }
       }
     }
@@ -260,5 +320,21 @@
       align-items: center;
       gap: 10px;
     }
+  }
+
+  .batch-main-item :deep( .batch-main-item-right-selects-box::-webkit-scrollbar) {
+    width: 0px; /* 滚动条宽度设置为0，确保滚动条不显示 */
+  }
+
+  .batch-main-item  :deep( .batch-main-item-right-selects-box::-webkit-scrollbar-track) {
+    background: transparent; /* 将轨道背景设置为透明 */
+  }
+
+  .batch-main-item  :deep( .batch-main-item-right-selects-box::-webkit-scrollbar-thumb) {
+    background-color: transparent; /* 将滑块颜色设置为透明 */
+  }
+
+  .batch-main-item  :deep( .batch-main-item-right-selects-box::-webkit-scrollbar-thumb:hover) {
+    background-color: transparent; /* 将滑块悬停颜色设置为透明 */
   }
 </style>

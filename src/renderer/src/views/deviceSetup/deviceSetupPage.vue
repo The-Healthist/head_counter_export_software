@@ -5,6 +5,8 @@
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
+
+        <!-- Detected Device -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
@@ -16,6 +18,8 @@
           </div>
           <div class="batch-main-item-label">Detected Device</div>
         </div>
+
+        <!-- Random UUID -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
@@ -25,6 +29,8 @@
           <!-- TODO: 让文本可以复制 -->
           <div class="batch-main-item-label">Random UUID</div>
         </div>
+
+        <!-- Month -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
@@ -35,6 +41,7 @@
           <div class="batch-main-item-label">Month</div>
         </div>
 
+        <!-- Toilet -->
         <div class="batch-main-item">
           <div class="batch-main-item-right" @click="selectToilet">
             <FormSelectButton>
@@ -45,6 +52,7 @@
           <div class="batch-main-item-label">Toilet</div>
         </div>
 
+        <!-- Report Interval -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
@@ -55,6 +63,8 @@
           <div class="batch-main-item-label">Report Interval</div>
         </div>
       </div>
+
+      <!-- Init Button -->
       <div class="batch-main-button">
         <InitButton @click="openRenewInitDialog">
           <template #label>INITIALIZE</template>
