@@ -22,6 +22,7 @@
               {{ uuid }}
             </div>
           </div>
+          <!-- TODO: 让文本可以复制 -->
           <div class="batch-main-item-label">Random UUID</div>
         </div>
         <div class="batch-main-item">
@@ -35,7 +36,7 @@
         </div>
 
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
+          <div class="batch-main-item-right" @click="selectToilet">
             <FormSelectButton>
               <template #form-select-button-label>Select Toilet...</template>
             </FormSelectButton>
@@ -73,6 +74,7 @@
   import InitButton from '@renderer/components/Button/InitButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
+  import axios from '@renderer/utils/axios'
 
   // 生成UUID
   const uuid = ref(uuidv4())
@@ -114,6 +116,15 @@
   const isRenewInitDialogVisible = ref(false)
   function openRenewInitDialog() {
     isRenewInitDialogVisible.value = true
+  }
+
+  const toilets = ref([])
+  const selectToilet = async () => {
+    await axios.get('/api/toilets').then((res) => {
+      toilets.value = res.data.data
+      console.log(toilets.value)
+    })
+    console.log('selectToilet')
   }
 
   // 示例用法（您可以根据实际逻辑替换）
@@ -179,6 +190,9 @@
           gap: 10px;
           flex-shrink: 0;
           border-radius: 3px;
+          img {
+            cursor: pointer;
+          }
         }
       }
     }
