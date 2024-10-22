@@ -52,6 +52,7 @@
               {{ uuid }}
             </div>
           </div>
+          <!-- TODO: 让文本可以复制 -->
           <div class="label-box">
             <div class="batch-main-item-label">Device UUID</div>
           </div>
@@ -99,21 +100,22 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onBeforeMount } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
   import NormalButton from '@renderer/components/Button/NormalButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
+  import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-  import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
+  import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
 
   const router = useRouter()
 
-  // to single mode
+  // 跳转到单一模式
   function navigateTo(path: string) {
     localStorage.setItem('dataExportMode', 'single')
     router.push(path)
@@ -150,15 +152,18 @@
       console.warn('Invalid status:', newStatus)
     }
   }
+
   /**
-   * batch export
+   * Batch export
    */
   const isStartBatchExport = ref(false)
   function startBatchExport() {
     isStartBatchExport.value = true
+    // 添加批处理导出的逻辑
   }
   function stopBatchExport() {
     isStartBatchExport.value = false
+    // 添加停止批处理导出的逻辑
   }
 
   // 控制弹窗可见性的状态
@@ -172,28 +177,44 @@
     isRenewInitDialogVisible.value = true
   }
 
-  // 使用Pinia的store管理月份和间隔
+  // 使用 Pinia 的 store 来管理月份和间隔
   const formStore = useFormStore()
   const Months = formStore.getMonths()
-  // const Intervals = formStore.getIntervals()
+  // const Intervals = formStore.getIntervals() // 如果不需要间隔可以注释
 
-  // select toilet
+  // 获取厕所数据
   const toilets = ref([])
-  const selectToilet = () => {
+  const fetchToilet = async () => {
+    try {
+      const res = await axios.get('/api/toilets')
+      toilets.value = res.data.data
+      console.log(toilets.value)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  // 在组件挂载前获取厕所数据
+  onBeforeMount(() => {
+    fetchToilet()
+  })
+
+  // 选择厕所
+  const selectedToilet = ref('')
+  function selectToilet() {
     console.log('selectToilet')
   }
-  const selectedToilet = ref('')
-  const selectCurrentToilet = (toilet: string) => {
+  function selectCurrentToilet(toilet: string) {
     selectedToilet.value = toilet
     console.log('selectCurrentToilet', toilet)
   }
 
-  // select month
-  const selectMonth = () => {
+  // 选择月份
+  const selectedMonth = ref('')
+  function selectMonth() {
     console.log('selectMonth')
   }
-  const selectedMonth = ref('')
-  const selectCurrentMonth = (month: string) => {
+  function selectCurrentMonth(month: string) {
     selectedMonth.value = month
     console.log('selectCurrentMonth', month)
   }
