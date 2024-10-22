@@ -86,7 +86,6 @@
   import { ref, computed, onBeforeMount } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
-  import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
   import NormalButton from '@renderer/components/Button/NormalButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'

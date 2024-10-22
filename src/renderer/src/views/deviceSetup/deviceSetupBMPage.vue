@@ -7,12 +7,11 @@
       <div class="batch-main-form">
         <!-- Month -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Month...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="Select" />
-          </div>
+          <MonthSelector
+            :Months="Months"
+            @select-month="selectMonth"
+            @select-current-month="selectCurrentMonth"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Month</div>
           </div>
@@ -20,12 +19,11 @@
 
         <!-- Report Interval -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Interval...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="Select" />
-          </div>
+          <IntervalSelector
+            :Intervals="Intervals"
+            @select-interval="selectInterval"
+            @select-current-interval="selectCurrentInterval"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Report Interval</div>
           </div>
@@ -33,7 +31,7 @@
 
         <!-- Toilet -->
         <div class="batch-main-item">
-          <ToiletSelectorBM
+          <ToiletSelector
             :toilets="toilets"
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
@@ -99,16 +97,19 @@
   import { ref, computed, onBeforeMount } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
-  import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
+  import LongerButton from '@renderer/components/Button/LongerButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-  import ToiletSelectorBM from '@renderer/components/Form/ToiletSelectorBM.vue' // 引入新组件
-  import LongerButton from '@renderer/components/Button/LongerButton.vue'
+  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
+  import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
+  import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
+  import { useFormStore } from '@renderer/stores/form'
 
   const router = useRouter()
-  // to single mode
+
+  // 跳转到单一模式
   function navigateTo(path: string) {
     localStorage.setItem('deviceSetupMode', 'single')
     router.push(path)
@@ -147,7 +148,6 @@
   }
 
   // 控制弹窗可见性的状态
-  // TODO: 打开没检测到设备的弹窗
   const isNoDeviceDialogVisible = ref(false)
   function openNoDeviceDialog() {
     isNoDeviceDialogVisible.value = true
@@ -158,29 +158,59 @@
     isRenewInitDialogVisible.value = true
   }
 
-  // fetch toilet data
+  // 使用Pinia的store管理月份和间隔
+  const formStore = useFormStore()
+  const Months = formStore.getMonths()
+  const Intervals = formStore.getIntervals()
+
+  // 选择厕所
   const toilets = ref([])
-  const fetchToilet = async () => {
-    await axios
-      .get('/api/toilets')
-      .then((res) => {
-        toilets.value = res.data.data
-        console.log(toilets.value)
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }
   const selectToilet = () => {
     console.log('selectToilet')
   }
   const selectedToilet = ref('')
   const selectCurrentToilet = (toilet: string) => {
     selectedToilet.value = toilet
+    console.log('selectCurrentToilet', toilet)
   }
+
+  // 选择月份
+  const selectMonth = () => {
+    console.log('selectMonth')
+  }
+  const selectedMonth = ref('')
+  const selectCurrentMonth = (month: string) => {
+    selectedMonth.value = month
+    console.log('selectCurrentMonth', month)
+  }
+
+  // 选择间隔
+  const selectInterval = () => {
+    console.log('selectInterval')
+  }
+  const selectedInterval = ref('')
+  const selectCurrentInterval = (interval: string) => {
+    selectedInterval.value = interval
+    console.log('selectCurrentInterval', interval)
+  }
+
+  // 获取厕所数据
+  const fetchToilet = async () => {
+    try {
+      const res = await axios.get('/api/toilets')
+      toilets.value = res.data.data
+      console.log(toilets.value)
+    } catch (err) {
+      console.error(err)
+    }
+    console.log('selectToilet')
+  }
+
+  // 在组件挂载前获取厕所数据
   onBeforeMount(() => {
     fetchToilet()
   })
+
   // 示例用法
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')

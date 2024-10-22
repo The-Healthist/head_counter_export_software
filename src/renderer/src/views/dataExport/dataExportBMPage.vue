@@ -7,12 +7,11 @@
       <div class="batch-main-form">
         <!-- Month -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Month...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
+          <MonthSelector
+            :Months="Months"
+            @select-month="selectMonth"
+            @select-current-month="selectCurrentMonth"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Month</div>
           </div>
@@ -60,12 +59,11 @@
 
         <!-- Placement Toilet -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Toilet...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
+          <ToiletSelector
+            :toilets="toilets"
+            @select-toilet="selectToilet"
+            @select-current-toilet="selectCurrentToilet"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Placement Toilet</div>
           </div>
@@ -91,6 +89,9 @@
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import { useRouter } from 'vue-router'
+  import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
+  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
+  import { useFormStore } from '@renderer/stores/form'
 
   const router = useRouter()
 
@@ -141,6 +142,32 @@
   const isRenewInitDialogVisible = ref(false)
   function openRenewInitDialog() {
     isRenewInitDialogVisible.value = true
+  }
+
+  // 使用Pinia的store管理月份和间隔
+  const formStore = useFormStore()
+  const Months = formStore.getMonths()
+  // const Intervals = formStore.getIntervals()
+
+  // select toilet
+  const toilets = ref([])
+  const selectToilet = () => {
+    console.log('selectToilet')
+  }
+  const selectedToilet = ref('')
+  const selectCurrentToilet = (toilet: string) => {
+    selectedToilet.value = toilet
+    console.log('selectCurrentToilet', toilet)
+  }
+
+  // select month
+  const selectMonth = () => {
+    console.log('selectMonth')
+  }
+  const selectedMonth = ref('')
+  const selectCurrentMonth = (month: string) => {
+    selectedMonth.value = month
+    console.log('selectCurrentMonth', month)
   }
 
   // 示例用法
