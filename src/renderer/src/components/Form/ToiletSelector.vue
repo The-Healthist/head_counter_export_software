@@ -1,12 +1,13 @@
-```vue
 <template>
-  <div v-if="toilets.length <= 0" class="select-box" @click="selectToilet">
+  <!-- init click -->
+  <div v-show="!isShowToiletSelector" class="select-box" @click="selectToilet">
     <FormSelectButton>
       <template #form-select-button-label>Select Toilet...</template>
     </FormSelectButton>
     <img src="@renderer/assets/form/select.svg" alt="Select" />
   </div>
-  <div v-else class="select-box selects-box">
+  <!-- show toilet selector -->
+  <div v-show="toilets.length > 0 && isShowToiletSelector" class="select-box selects-box">
     <div
       v-for="toilet in toilets"
       :key="toilet"
@@ -19,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from 'vue'
+  import { defineProps, defineEmits, ref } from 'vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
 
   const props = defineProps<{
@@ -31,11 +32,14 @@
     (e: 'selectCurrentToilet', toilet: string): void
   }>()
 
+  const isShowToiletSelector = ref(false)
   const selectToilet = () => {
+    isShowToiletSelector.value = true
     emit('selectToilet')
   }
 
   const selectCurrentToilet = (toilet: string) => {
+    // isShowToiletSelector.value = false
     emit('selectCurrentToilet', toilet)
   }
 </script>

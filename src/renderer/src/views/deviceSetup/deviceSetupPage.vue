@@ -5,7 +5,6 @@
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
-
         <!-- Detected Device -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
@@ -16,7 +15,9 @@
               {{ detectedDeviceStatus }}
             </div>
           </div>
-          <div class="batch-main-item-label">Detected Device</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Detected Device</div>
+          </div>
         </div>
 
         <!-- Random UUID -->
@@ -27,7 +28,9 @@
             </div>
           </div>
           <!-- TODO: 让文本可以复制 -->
-          <div class="batch-main-item-label">Random UUID</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Random UUID</div>
+          </div>
         </div>
 
         <!-- Month -->
@@ -38,18 +41,30 @@
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="" />
           </div>
-          <div class="batch-main-item-label">Month</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Month</div>
+          </div>
         </div>
 
         <!-- Toilet -->
-        <div class="batch-main-item">
-          <div class="batch-main-item-right" @click="selectToilet">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Toilet...</template>
-            </FormSelectButton>
+        <div v-show="isShowToiletSelector" class="batch-main-item">
+          <ToiletSelector
+            :toilets="toilets"
+            @select-toilet="selectToilet"
+            @select-current-toilet="selectCurrentToilet"
+          />
+          <div class="label-box">
+            <div class="batch-main-item-label">Toilet</div>
+          </div>
+        </div>
+        <div v-show="!isShowToiletSelector" class="batch-main-item">
+          <div class="batch-main-item-right" @click="isShowToiletSelector = !isShowToiletSelector">
+            <div class="form-normal-text current-toilet">{{ selectedToilet }}</div>
             <img src="@renderer/assets/form/select.svg" alt="" />
           </div>
-          <div class="batch-main-item-label">Toilet</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Toilet</div>
+          </div>
         </div>
 
         <!-- Report Interval -->
@@ -60,7 +75,9 @@
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="" />
           </div>
-          <div class="batch-main-item-label">Report Interval</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Report Interval</div>
+          </div>
         </div>
       </div>
 
@@ -77,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onBeforeMount } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
@@ -86,7 +103,7 @@
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-
+  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   const router = useRouter()
 
   // to batch mode
@@ -96,7 +113,7 @@
     console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
   }
 
-  // 生成UUID
+  // UUID
   const uuid = ref(uuidv4())
 
   // 检测设备状态逻辑
@@ -140,15 +157,30 @@
   }
 
   const toilets = ref([])
-  const selectToilet = async () => {
+  const fetchToilet = async () => {
     await axios.get('/api/toilets').then((res) => {
       toilets.value = res.data.data
       console.log(toilets.value)
     })
     console.log('selectToilet')
   }
+  // fetch toilet data
+  onBeforeMount(() => {
+    fetchToilet()
+  })
 
-  // 示例用法（您可以根据实际逻辑替换）
+  // select toilet
+  const isShowToiletSelector = ref(true)
+  const selectedToilet = ref('')
+  function selectToilet() {
+    console.log('selectToilet')
+  }
+  function selectCurrentToilet(toilet: string) {
+    isShowToiletSelector.value = false
+    selectedToilet.value = toilet
+    console.log('selectCurrentToilet', toilet)
+  }
+
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)
@@ -168,7 +200,7 @@
     background-color: #fff;
     position: relative;
     z-index: 3;
-
+    //中间内容
     .batch-main {
       width: 517px;
       height: auto;
@@ -177,23 +209,36 @@
       align-items: center;
       gap: 40px;
     }
-
+    // 表单
     .batch-main-form {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 10px;
       align-self: stretch;
-
+      position: relative;
+      // 表单项 行
       .batch-main-item {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         flex-direction: row-reverse;
         gap: 20px;
 
-        &-label {
+        .label-box {
+          position: relative;
+          display: flex;
+          height: 100%;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 10px 0px 10px 15px;
+        }
+
+        .batch-main-item-label {
           color: #888;
           display: flex;
+          height: 100%;
+          flex-direction: column;
           font-family: Inter;
           font-size: 16px;
           font-style: normal;
@@ -202,7 +247,7 @@
           white-space: nowrap;
         }
 
-        &-right {
+        .batch-main-item-right {
           display: flex;
           width: 372px;
           height: 38px;
@@ -213,6 +258,10 @@
           border-radius: 3px;
           img {
             cursor: pointer;
+          }
+          .current-toilet {
+            overflow-x: hidden;
+            white-space: nowrap;
           }
         }
       }

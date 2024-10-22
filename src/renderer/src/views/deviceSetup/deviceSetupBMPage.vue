@@ -13,7 +13,9 @@
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="Select" />
           </div>
-          <div class="batch-main-item-label">Month</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Month</div>
+          </div>
         </div>
 
         <!-- Report Interval -->
@@ -24,7 +26,9 @@
             </FormSelectButton>
             <img src="@renderer/assets/form/select.svg" alt="Select" />
           </div>
-          <div class="batch-main-item-label">Report Interval</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Report Interval</div>
+          </div>
         </div>
 
         <!-- Toilet -->
@@ -34,7 +38,9 @@
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
           />
-          <div class="batch-main-item-label">Toilets</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Toilets</div>
+          </div>
         </div>
 
         <!-- Detected Device -->
@@ -58,7 +64,9 @@
             </div>
           </div>
           <!-- TODO: 让文本可以复制 -->
-          <div class="batch-main-item-label">Current UUID</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Current UUID</div>
+          </div>
         </div>
 
         <!-- Current Toilet -->
@@ -68,7 +76,9 @@
               {{ selectedToilet }}
             </div>
           </div>
-          <div class="batch-main-item-label">Current Toilet</div>
+          <div class="label-box">
+            <div class="batch-main-item-label">Current Toilet</div>
+          </div>
         </div>
       </div>
       <div class="batch-main-button">
@@ -83,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onBeforeMount } from 'vue'
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
@@ -145,20 +155,29 @@
     isRenewInitDialogVisible.value = true
   }
 
+  // fetch toilet data
   const toilets = ref([])
-  const selectToilet = async () => {
-    await axios.get('/api/toilets').then((res) => {
-      toilets.value = res.data.data
-      console.log(toilets.value)
-    })
+  const fetchToilet = async () => {
+    await axios
+      .get('/api/toilets')
+      .then((res) => {
+        toilets.value = res.data.data
+        console.log(toilets.value)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }
+  const selectToilet = () => {
     console.log('selectToilet')
   }
-
   const selectedToilet = ref('')
   const selectCurrentToilet = (toilet: string) => {
     selectedToilet.value = toilet
   }
-
+  onBeforeMount(() => {
+    fetchToilet()
+  })
   // 示例用法（您可以根据实际逻辑替换）
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
@@ -198,11 +217,20 @@
 
       .batch-main-item {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         flex-direction: row-reverse;
         gap: 20px;
+        .label-box {
+          position: relative;
+          display: flex;
+          height: 100%;
+          padding: 10px 0px 10px 15px;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
 
-        &-label {
+        .batch-main-item-label {
           color: #888;
           display: flex;
           font-family: Inter;
@@ -213,7 +241,7 @@
           white-space: nowrap;
         }
 
-        &-right {
+        .batch-main-item-right {
           display: flex;
           width: 372px;
           height: 38px;
