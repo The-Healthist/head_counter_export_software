@@ -33,8 +33,9 @@ module.exports = {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off',
     'no-unused-expressions': 'off',
-    '@typescript-eslint/no-unused-expressions': 'error',
+    '@typescript-eslint/no-unused-expressions': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
     'import/no-unresolved': 'warn',
-    'prettier/prettier': 'warn' 
+    'prettier/prettier': 'warn'
   }
 }

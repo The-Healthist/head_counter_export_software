@@ -14,7 +14,6 @@
           </div>
           <div class="batch-main-item-label">Month</div>
         </div>
-        
 
         <div class="batch-main-item">
           <div class="batch-main-item-right">
@@ -54,7 +53,6 @@
           </div>
           <div class="batch-main-item-label">Placement Toilet</div>
         </div>
-
       </div>
       <div class="batch-main-button">
         <InitButton @click="openRenewInitDialog">

@@ -31,6 +31,7 @@ module.exports = {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off',
     'no-unused-vars': 'off', // 不报告未使用的变量
-    'import/no-unresolved': 'warn' // 确保所有的 import 都能正确解析
+    'import/no-unresolved': 'warn', // 确保所有的 import 都能正确解析
+    '@typescript-eslint/no-explicit-any': 'off'
   }
 }
