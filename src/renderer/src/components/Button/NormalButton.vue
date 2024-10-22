@@ -7,9 +7,10 @@
 <style scoped>
   .init-button {
     display: flex;
-    width: 184px;
+    min-width: 184px;
+    width: auto;
     height: 40px;
-    padding: 23px 30px;
+    padding: 13px 30px;
     justify-content: center;
     align-items: center;
     gap: 10px;

@@ -83,9 +83,9 @@
 
       <!-- Init Button -->
       <div class="batch-main-button">
-        <InitButton @click="openRenewInitDialog">
+        <NormalButton @click="openRenewInitDialog">
           <template #label>INITIALIZE</template>
-        </InitButton>
+        </NormalButton>
       </div>
     </div>
   </div>
@@ -98,7 +98,7 @@
   import { v4 as uuidv4 } from 'uuid'
   import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
-  import InitButton from '@renderer/components/Button/InitButton.vue'
+  import NormalButton from '@renderer/components/Button/NormalButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
@@ -186,131 +186,4 @@
   }, 3000)
 </script>
 
-<style scoped lang="scss">
-  .setup-page {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    padding: 15px 25px;
-    justify-content: center;
-    align-items: center;
-    gap: 123px;
-    flex: 1 0 0;
-    align-self: stretch; // Extend to parent width
-    background-color: #fff;
-    position: relative;
-    z-index: 3;
-    //中间内容
-    .batch-main {
-      width: 517px;
-      height: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 40px;
-    }
-    // 表单
-    .batch-main-form {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 10px;
-      align-self: stretch;
-      position: relative;
-      // 表单项 行
-      .batch-main-item {
-        display: flex;
-        align-items: stretch;
-        flex-direction: row-reverse;
-        gap: 20px;
-
-        .label-box {
-          position: relative;
-          display: flex;
-          height: 100%;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 10px 0px 10px 15px;
-        }
-
-        .batch-main-item-label {
-          color: #888;
-          display: flex;
-          height: 100%;
-          flex-direction: column;
-          font-family: Inter;
-          font-size: 16px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: normal;
-          white-space: nowrap;
-        }
-
-        .batch-main-item-right {
-          display: flex;
-          width: 372px;
-          height: 38px;
-          padding: 10px 20px 10px 15px;
-          align-items: center;
-          gap: 10px;
-          flex-shrink: 0;
-          border-radius: 3px;
-          img {
-            cursor: pointer;
-          }
-          .current-toilet {
-            overflow-x: hidden;
-            white-space: nowrap;
-          }
-        }
-      }
-    }
-    .form-normal-text {
-      color: #333;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    /* 根据状态应用不同的样式 */
-    .status-new {
-      color: #ccc;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    .status-exported {
-      color: #008000;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    .status-no-exported {
-      color: #f00;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    .batch-main-button {
-      display: flex;
-      width: 184px;
-      height: 40px;
-      padding: 23px 30px;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-  }
-</style>
+<!-- 移除 <style scoped> 部分 -->
