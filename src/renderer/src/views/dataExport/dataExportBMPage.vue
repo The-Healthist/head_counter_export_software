@@ -69,9 +69,27 @@
           </div>
         </div>
       </div>
+
+      <div v-show="isStartBatchExport" class="batch-main-running">
+        <div class="batch-main-running-label">
+          RUNNING...<br />
+          WRITING DATA TO DEVICE
+        </div>
+      </div>
+      <!-- TODO:等待下一个设备 -->
+      <div v-show="isStartBatchExport && false" class="batch-main-running">
+        <div class="batch-main-running-label">
+          RUNNING...<br />
+          WAITING FOR NEXT DEVICE
+        </div>
+      </div>
+
       <div class="batch-main-button">
-        <NormalButton @click="openRenewInitDialog">
-          <template #label>INITIALIZE</template>
+        <NormalButton v-show="!isStartBatchExport" @click="startBatchExport">
+          <template #label>EXPORT</template>
+        </NormalButton>
+        <NormalButton v-show="isStartBatchExport" @click="stopBatchExport">
+          <template #label>STOP</template>
         </NormalButton>
       </div>
     </div>
@@ -131,6 +149,16 @@
     } else {
       console.warn('Invalid status:', newStatus)
     }
+  }
+  /**
+   * batch export
+   */
+  const isStartBatchExport = ref(false)
+  function startBatchExport() {
+    isStartBatchExport.value = true
+  }
+  function stopBatchExport() {
+    isStartBatchExport.value = false
   }
 
   // 控制弹窗可见性的状态

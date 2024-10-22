@@ -81,9 +81,19 @@
           </div>
         </div>
       </div>
+      <div v-show="isStartBatchInitialize" class="batch-main-running">
+        <div class="batch-main-running-label">
+          RUNNING...<br />
+          WRITING DATA TO DEVICE
+        </div>
+      </div>
       <div class="batch-main-button">
-        <LongerButton @click="openRenewInitDialog">
+        <LongerButton v-show="!isStartBatchInitialize" @click="startBatchInitialize">
           <template #label>START BATCH INITIALIZE</template>
+        </LongerButton>
+
+        <LongerButton v-show="isStartBatchInitialize" @click="stopBatchInitialize">
+          <template #label>STOP</template>
         </LongerButton>
       </div>
     </div>
@@ -106,9 +116,7 @@
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
-
   const router = useRouter()
-
   // 跳转到单一模式
   function navigateTo(path: string) {
     localStorage.setItem('deviceSetupMode', 'single')
@@ -118,7 +126,6 @@
 
   // 生成UUID
   const uuid = ref(uuidv4())
-
   // 检测设备状态逻辑
   const detectedDeviceStatus = ref('New device')
   const detectedDevice = ref('COM1 serial')
@@ -145,6 +152,20 @@
     } else {
       console.warn('Invalid status:', newStatus)
     }
+  }
+
+  /**
+   * batch initialize
+   */
+  const isStartBatchInitialize = ref(false)
+  function startBatchInitialize() {
+    isStartBatchInitialize.value = true
+    console.log('startBatchInitialize')
+  }
+
+  function stopBatchInitialize() {
+    isStartBatchInitialize.value = false
+    console.log('stopBatchInitialize')
   }
 
   // 控制弹窗可见性的状态
