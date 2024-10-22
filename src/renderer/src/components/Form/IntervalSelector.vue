@@ -1,23 +1,23 @@
 <template>
-  <div ref="selectorWrapper" class="toilet-selector-wrapper">
+  <div class="Interval-selector-wrapper" ref="selectorWrapper">
     <!-- 主选择框 -->
-    <div class="select-box" @click="selectToilet">
-      <FormSelectButton v-show="selectedToilet === ''">
-        <template #form-select-button-label>Select Toilet...</template>
+    <div class="select-box" @click="selectInterval">
+      <FormSelectButton v-show="selectedInterval === ''">
+        <template #form-select-button-label>Select Interval...</template>
       </FormSelectButton>
-      <div v-show="selectedToilet !== ''" class="form-normal-text">{{ selectedToilet }}</div>
+      <div v-show="selectedInterval !== ''" class="form-normal-text">{{ selectedInterval }}</div>
       <img src="@renderer/assets/form/select.svg" alt="Select" />
     </div>
 
     <!-- 下拉选项 -->
-    <div v-show="toilets.length > 0 && isShowToiletSelector" class="selects-box">
+    <div v-show="Intervals.length > 0 && isShowIntervalSelector" class="selects-box">
       <div
-        v-for="toilet in toilets"
-        :key="toilet"
+        v-for="Interval in Intervals"
+        :key="Interval"
         class="selects-box-item"
-        @click="() => selectCurrentToilet(toilet)"
+        @click="() => selectCurrentInterval(Interval)"
       >
-        {{ toilet }}
+        {{ Interval }}
       </div>
     </div>
   </div>
@@ -28,33 +28,34 @@
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
 
   const props = defineProps<{
-    toilets: string[]
+    Intervals: string[]
   }>()
 
   const emit = defineEmits<{
-    (e: 'selectToilet'): void
-    (e: 'selectCurrentToilet', toilet: string): void
+    (e: 'selectInterval'): void
+    (e: 'selectCurrentInterval', Interval: string): void
   }>()
 
-  const isShowToiletSelector = ref(false)
-  const selectedToilet = ref('')
+  const isShowIntervalSelector = ref(false)
+  const selectedInterval = ref('')
+
   const selectorWrapper = ref<HTMLElement | null>(null)
 
-  const selectToilet = () => {
-    isShowToiletSelector.value = true
-    emit('selectToilet')
+  const selectInterval = () => {
+    isShowIntervalSelector.value = true
+    emit('selectInterval')
   }
 
-  const selectCurrentToilet = (toilet: string) => {
-    selectedToilet.value = toilet
-    isShowToiletSelector.value = false
-    emit('selectCurrentToilet', toilet)
+  const selectCurrentInterval = (Interval: string) => {
+    selectedInterval.value = Interval
+    isShowIntervalSelector.value = false
+    emit('selectCurrentInterval', Interval)
   }
 
   // Function to handle clicks outside the component
   const handleClickOutside = (event: MouseEvent) => {
     if (selectorWrapper.value && !selectorWrapper.value.contains(event.target as Node)) {
-      isShowToiletSelector.value = false
+      isShowIntervalSelector.value = false
     }
   }
 
@@ -80,7 +81,7 @@
     font-weight: 400;
     line-height: normal;
   }
-  .toilet-selector-wrapper {
+  .Interval-selector-wrapper {
     position: relative;
     display: inline-block;
   }
@@ -89,7 +90,7 @@
     display: flex;
     width: 372px;
     height: 38px;
-    padding: 10px 20px 10px 15px;
+    padding: 10px 0px 10px 15px;
     align-items: center;
     gap: 10px;
     flex-shrink: 0;

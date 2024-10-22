@@ -35,12 +35,11 @@
 
         <!-- Month -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Month...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
+          <MonthSelector
+            :Months="Months"
+            @select-month="selectMonth"
+            @select-current-month="selectCurrentMonth"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Month</div>
           </div>
@@ -57,24 +56,14 @@
             <div class="batch-main-item-label">Toilet</div>
           </div>
         </div>
-        <div v-show="!isShowToiletSelector" class="batch-main-item">
-          <div class="batch-main-item-right" @click="isShowToiletSelector = !isShowToiletSelector">
-            <div class="form-normal-text current-toilet">{{ selectedToilet }}</div>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
-          <div class="label-box">
-            <div class="batch-main-item-label">Toilet</div>
-          </div>
-        </div>
 
         <!-- Report Interval -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Interval...</template>
-            </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
-          </div>
+          <IntervalSelector
+            :Intervals="Intervals"
+            @select-interval="selectInterval"
+            @select-current-interval="selectCurrentInterval"
+          />
           <div class="label-box">
             <div class="batch-main-item-label">Report Interval</div>
           </div>
@@ -104,6 +93,9 @@
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
+  import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
+  import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
+  import { useFormStore } from '@renderer/stores/form'
   const router = useRouter()
 
   // to batch mode
@@ -169,6 +161,13 @@
     fetchToilet()
   })
 
+  /*
+  form: 使用pinia的store来管理月份和间隔
+  */
+  const formStore = useFormStore()
+  const Months = formStore.getMonths()
+  const Intervals = formStore.getIntervals()
+
   // select toilet
   const isShowToiletSelector = ref(true)
   const selectedToilet = ref('')
@@ -176,9 +175,27 @@
     console.log('selectToilet')
   }
   function selectCurrentToilet(toilet: string) {
-    isShowToiletSelector.value = false
     selectedToilet.value = toilet
     console.log('selectCurrentToilet', toilet)
+  }
+  // select month
+  const selectedMonth = ref('')
+  function selectMonth() {
+    console.log('selectMonth')
+  }
+  function selectCurrentMonth(month: string) {
+    selectedMonth.value = month
+    console.log('selectCurrentMonth', month)
+  }
+
+  // select interval
+  const selectedInterval = ref('')
+  function selectInterval() {
+    console.log('selectInterval')
+  }
+  function selectCurrentInterval(interval: string) {
+    selectedInterval.value = interval
+    console.log('selectCurrentInterval', interval)
   }
 
   setTimeout(() => {

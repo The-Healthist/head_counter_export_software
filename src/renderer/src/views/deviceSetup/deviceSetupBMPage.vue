@@ -33,7 +33,7 @@
 
         <!-- Toilet -->
         <div class="batch-main-item">
-          <ToiletSelector
+          <ToiletSelectorBM
             :toilets="toilets"
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
@@ -104,7 +104,7 @@
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue' // 引入新组件
+  import ToiletSelectorBM from '@renderer/components/Form/ToiletSelectorBM.vue' // 引入新组件
   import LongerButton from '@renderer/components/Button/LongerButton.vue'
 
   const router = useRouter()

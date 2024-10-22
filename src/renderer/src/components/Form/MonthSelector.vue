@@ -1,23 +1,23 @@
 <template>
-  <div ref="selectorWrapper" class="toilet-selector-wrapper">
+  <div class="Month-selector-wrapper" ref="selectorWrapper">
     <!-- 主选择框 -->
-    <div class="select-box" @click="selectToilet">
-      <FormSelectButton v-show="selectedToilet === ''">
-        <template #form-select-button-label>Select Toilet...</template>
+    <div class="select-box" @click="selectMonth">
+      <FormSelectButton v-show="selectedMonth === ''">
+        <template #form-select-button-label>Select Month...</template>
       </FormSelectButton>
-      <div v-show="selectedToilet !== ''" class="form-normal-text">{{ selectedToilet }}</div>
+      <div v-show="selectedMonth !== ''" class="form-normal-text">{{ selectedMonth }}</div>
       <img src="@renderer/assets/form/select.svg" alt="Select" />
     </div>
 
     <!-- 下拉选项 -->
-    <div v-show="toilets.length > 0 && isShowToiletSelector" class="selects-box">
+    <div v-show="Months.length > 0 && isShowMonthSelector" class="selects-box">
       <div
-        v-for="toilet in toilets"
-        :key="toilet"
+        v-for="Month in Months"
+        :key="Month"
         class="selects-box-item"
-        @click="() => selectCurrentToilet(toilet)"
+        @click="() => selectCurrentMonth(Month)"
       >
-        {{ toilet }}
+        {{ Month }}
       </div>
     </div>
   </div>
@@ -28,37 +28,36 @@
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
 
   const props = defineProps<{
-    toilets: string[]
+    Months: string[]
   }>()
 
   const emit = defineEmits<{
-    (e: 'selectToilet'): void
-    (e: 'selectCurrentToilet', toilet: string): void
+    (e: 'selectMonth'): void
+    (e: 'selectCurrentMonth', Month: string): void
   }>()
 
-  const isShowToiletSelector = ref(false)
-  const selectedToilet = ref('')
+  const isShowMonthSelector = ref(false)
+  const selectedMonth = ref('')
+
   const selectorWrapper = ref<HTMLElement | null>(null)
 
-  const selectToilet = () => {
-    isShowToiletSelector.value = true
-    emit('selectToilet')
+  const selectMonth = () => {
+    isShowMonthSelector.value = true
+    emit('selectMonth')
   }
 
-  const selectCurrentToilet = (toilet: string) => {
-    selectedToilet.value = toilet
-    isShowToiletSelector.value = false
-    emit('selectCurrentToilet', toilet)
+  const selectCurrentMonth = (Month: string) => {
+    selectedMonth.value = Month
+    isShowMonthSelector.value = false
+    emit('selectCurrentMonth', Month)
   }
 
-  // Function to handle clicks outside the component
   const handleClickOutside = (event: MouseEvent) => {
     if (selectorWrapper.value && !selectorWrapper.value.contains(event.target as Node)) {
-      isShowToiletSelector.value = false
+      isShowMonthSelector.value = false
     }
   }
 
-  // Add event listener on mount and remove on unmount
   onMounted(() => {
     document.addEventListener('click', handleClickOutside)
   })
@@ -80,7 +79,7 @@
     font-weight: 400;
     line-height: normal;
   }
-  .toilet-selector-wrapper {
+  .Month-selector-wrapper {
     position: relative;
     display: inline-block;
   }
@@ -89,7 +88,7 @@
     display: flex;
     width: 372px;
     height: 38px;
-    padding: 10px 20px 10px 15px;
+    padding: 10px 0px 10px 15px;
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
