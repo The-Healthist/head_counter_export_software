@@ -173,8 +173,8 @@
   function selectToilet() {
     console.log('selectToilet')
   }
-  function selectCurrentToilet(toilet: string) {
-    selectedToilet.value = toilet
+  function selectCurrentToilet(toilet: { name: string; uuid: string }) {
+    selectedToilet.value = toilet.name
     console.log('selectCurrentToilet', toilet)
   }
   // select month

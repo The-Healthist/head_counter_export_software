@@ -1,12 +1,23 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
-const api = {}
+// 自定义为渲染进程提供的API
+const api = {
+  /**
+   * 打开文件系统对话框，选择目录并返回选择的路径
+   */
+  openFileDialog: async () => {
+    try {
+      const result = await ipcRenderer.invoke('dialog:openFile')
+      return result
+    } catch (error) {
+      console.error('Error in openFileDialog:', error)
+      return null
+    }
+  }
+}
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+// 使用 `contextBridge` API 将 Electron API 暴露给渲染进程
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
@@ -15,8 +26,8 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
-  // @ts-ignore (define in dts)
+  // @ts-ignore (在 dts 文件中定义)
   window.electron = electronAPI
-  // @ts-ignore (define in dts)
+  // @ts-ignore (在 dts 文件中定义)
   window.api = api
 }

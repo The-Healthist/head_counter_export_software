@@ -150,7 +150,7 @@
   }
 
   // 获取厕所数据
-  const toilets = ref([])
+  const toilets = ref<{ name: string; uuid: string }[]>([])
   const fetchToilet = async () => {
     try {
       const res = await axios.get('/api/toilets')
@@ -180,8 +180,8 @@
   function selectToilet() {
     console.log('selectToilet')
   }
-  function selectCurrentToilet(toilet: string) {
-    selectedToilet.value = toilet
+  function selectCurrentToilet(toilet: { name: string; uuid: string }) {
+    selectedToilet.value = toilet.name
     console.log('selectCurrentToilet', toilet)
   }
 

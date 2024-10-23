@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -68,6 +68,17 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+// 处理打开文件对话框的IPC事件
+ipcMain.handle('dialog:openFile', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory'], // 允许选择目录
+    title: '选择数据保存路径',
+    buttonLabel: '选择',
+    message: '请选择一个文件夹来保存数据'
+  })
+  return result.canceled ? null : result.filePaths[0]
 })
 
 // In this file you can include the rest of your app"s specific main process

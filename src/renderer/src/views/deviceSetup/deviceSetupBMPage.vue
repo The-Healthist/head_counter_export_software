@@ -190,8 +190,8 @@
     console.log('selectToilet')
   }
   const selectedToilet = ref('')
-  const selectCurrentToilet = (toilet: string) => {
-    selectedToilet.value = toilet
+  const selectCurrentToilet = (toilet: { name: string; uuid: string }) => {
+    selectedToilet.value = toilet.name
     console.log('selectCurrentToilet', toilet)
   }
 

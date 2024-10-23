@@ -94,7 +94,7 @@
     if (modePath) {
       router.push(modePath)
     } else {
-    // settings
+      // settings
       router.push(path)
     }
   }
@@ -129,7 +129,7 @@
     padding-left: 50px;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     gap: 10px;
     flex-shrink: 0; // 不收缩
     align-self: stretch; // 拉伸

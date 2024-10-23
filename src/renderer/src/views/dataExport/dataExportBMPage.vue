@@ -7,12 +7,16 @@
       <div class="batch-main-form">
         <!-- Data Path -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
+          <div class="batch-main-item-right" style="cursor: pointer" @click="openFileDialog">
+            <FormSelectButton v-if="setupFormData.dataPath === ''">
               <template #form-select-button-label>Select...</template>
             </FormSelectButton>
+            <div v-if="setupFormData.dataPath !== ''">
+              <div class="form-normal-text">{{ setupFormData.dataPath }}</div>
+            </div>
             <img src="@renderer/assets/form/select.svg" alt="Select Data Path" />
           </div>
+
           <div class="label-box">
             <div class="batch-main-item-label">Data Path</div>
           </div>
@@ -22,10 +26,10 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ detectedDevice }}
+              {{ setupFormData?.detectedDevice }}
             </div>
             <div :class="statusClass">
-              {{ detectedDeviceStatus }}
+              {{ setupFormData?.detectedDeviceStatus }}
             </div>
           </div>
           <div class="label-box">
@@ -36,19 +40,18 @@
         <!-- Device UUID -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
-            <div class="form-normal-text" @click="copyUUID">
-              {{ uuid }}
+            <div class="form-normal-text">
+              {{ setupFormData?.deviceUUID }}
             </div>
           </div>
-          <!-- 实现文本可复制 -->
           <div class="label-box">
             <div class="batch-main-item-label">Device UUID</div>
           </div>
         </div>
 
-        <!-- Placement Toilet (多选) -->
+        <!-- Placement Toilet -->
         <div class="batch-main-item">
-          <ToiletSelectorMultiple
+          <ToiletSelector
             :toilets="toilets"
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
@@ -67,6 +70,13 @@
           />
           <div class="label-box">
             <div class="batch-main-item-label">Month</div>
+          </div>
+        </div>
+        <!-- exported toilets -->
+        <div class="batch-main-item">
+          <ExportedBox :toilets="toilets" />
+          <div class="label-box">
+            <div class="batch-main-item-label">Exported Toilets</div>
           </div>
         </div>
       </div>
@@ -112,9 +122,38 @@
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-  import ToiletSelectorMultiple from '@renderer/components/Form/ToiletSelectorMultiple.vue'
+  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
+  import ExportedBox from '@renderer/components/Form/ExportedBox.vue'
+
+  interface SetupFormData {
+    dataPath?: string
+    detectedDevice?: string
+    deviceUUID?: string
+    detectedDeviceStatus?: string
+    placementToilet?: { name: string; uuid: string }
+    month?: string
+    exportedToilets?: { name: string; uuid: string }[]
+  }
+
+  const setupFormData = ref<SetupFormData>({
+    dataPath: '',
+    detectedDevice: '',
+    deviceUUID: '',
+    detectedDeviceStatus: '',
+    placementToilet: { name: '', uuid: '' },
+    month: '',
+    exportedToilets: []
+  })
+
+  const toilets = ref<{ name: string; uuid: string }[]>([])
+  setupFormData.value.deviceUUID = uuidv4()
+  setupFormData.value.detectedDeviceStatus = 'New device'
+  setupFormData.value.detectedDevice = 'COM1 serial'
+  setupFormData.value.placementToilet = { name: '', uuid: '' }
+  setupFormData.value.exportedToilets = toilets.value
+  setupFormData.value.month = ''
 
   // 路由实例
   const router = useRouter()
@@ -126,16 +165,9 @@
     console.log('localStorage.getItem(dataExportMode)', localStorage.getItem('dataExportMode'))
   }
 
-  // 生成UUID
-  const uuid = ref(uuidv4())
-
-  // 检测设备状态逻辑
-  const detectedDeviceStatus = ref('New device')
-  const detectedDevice = ref('COM1 serial')
-
   // 计算当前状态对应的CSS类
   const statusClass = computed(() => {
-    switch (detectedDeviceStatus.value) {
+    switch (setupFormData.value.detectedDeviceStatus) {
       case 'New device':
         return 'status-new'
       case 'Exported Data Found on Disk':
@@ -151,7 +183,7 @@
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
-      detectedDeviceStatus.value = newStatus
+      setupFormData.value.detectedDeviceStatus = newStatus
     } else {
       console.warn('Invalid status:', newStatus)
     }
@@ -184,18 +216,15 @@
   // 使用 Pinia 的 store 来管理月份和间隔
   const formStore = useFormStore()
   const Months = formStore.getMonths()
-  // const Intervals = formStore.getIntervals() // 如果不需要间隔可以注释
 
   // 获取厕所数据
-  const toilets = ref<string[]>([])
+
   const fetchToilet = async () => {
-    try {
-      const res = await axios.get('/api/toilets')
+    await axios.get('/api/toilets').then((res) => {
       toilets.value = res.data.data
       console.log(toilets.value)
-    } catch (err) {
-      console.error(err)
-    }
+    })
+    console.log('selectToilet')
   }
 
   // 在组件挂载前获取厕所数据
@@ -203,16 +232,14 @@
     fetchToilet()
   })
 
-  // 选择厕所 (多选)
-  const selectedToilet = ref<string[]>([]) // 修改为数组
+  // 选择厕所
 
   function selectToilet() {
     console.log('Toilet selector clicked')
   }
 
-  function selectCurrentToilet(toilets: string[]) {
-    // 接收数组
-    selectedToilet.value = toilets
+  function selectCurrentToilet(toilet: { name: string; uuid: string }) {
+    setupFormData.value.placementToilet = toilet
     console.log('Selected Toilets:', toilets)
   }
 
@@ -226,17 +253,17 @@
     console.log('selectCurrentMonth', month)
   }
 
-  // 复制 UUID 到剪贴板
-  function copyUUID() {
-    navigator.clipboard
-      .writeText(uuid.value)
-      .then(() => {
-        console.log('UUID copied to clipboard')
-        // 可以添加一个提示用户复制成功的通知
-      })
-      .catch((err) => {
-        console.error('Failed to copy UUID:', err)
-      })
+  // 打开文件系统对话框并选择路径
+  async function openFileDialog() {
+    try {
+      const selectedPath = await window.api.openFileDialog() // 通过 contextBridge 暴露的 API
+      if (selectedPath) {
+        setupFormData.value.dataPath = selectedPath
+        console.log('Selected Path:', selectedPath)
+      }
+    } catch (error) {
+      console.error('Error selecting path:', error)
+    }
   }
 
   // 示例用法
@@ -244,3 +271,11 @@
     updateStatus('Exported Data Found on Disk')
   }, 3000)
 </script>
+
+<style scoped>
+  .selected-path {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #333;
+  }
+</style>
