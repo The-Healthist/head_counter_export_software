@@ -1,6 +1,6 @@
 // 初始化router.ts
 
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import DefaultLayout from '../layout/DefaultLayout.vue'
 // Adjust the path as necessary
 
@@ -42,7 +42,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 
