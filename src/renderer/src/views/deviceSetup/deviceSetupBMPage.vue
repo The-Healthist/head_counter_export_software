@@ -8,7 +8,7 @@
         <!-- Month -->
         <div class="batch-main-item">
           <MonthSelector
-            :Months="Months"
+            :Months="formData.months"
             @select-month="selectMonth"
             @select-current-month="selectCurrentMonth"
           />
@@ -20,7 +20,7 @@
         <!-- Report Interval -->
         <div class="batch-main-item">
           <IntervalSelector
-            :Intervals="Intervals"
+            :Intervals="formData.intervals"
             @select-interval="selectInterval"
             @select-current-interval="selectCurrentInterval"
           />
@@ -32,7 +32,7 @@
         <!-- Toilet -->
         <div class="batch-main-item">
           <ToiletSelector
-            :toilets="toilets"
+            :toilets="formData.toilets"
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
           />
@@ -45,10 +45,10 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ detectedDevice }}
+              {{ formData.detectedDevice }}
             </div>
-            <div :class="statusClass">
-              {{ detectedDeviceStatus }}
+            <div :class="formData.statusClass">
+              {{ formData.detectedDeviceStatus }}
             </div>
           </div>
           <div class="label-box">
@@ -60,7 +60,7 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ uuid }}
+              {{ formData.uuid }}
             </div>
           </div>
           <!-- TODO: 让文本可以复制 -->
@@ -72,8 +72,11 @@
         <!-- Current Toilet -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
-            <div class="form-normal-text current-toilet">
-              {{ selectedToilet }}
+            <div v-if="formData.selectedToilet !== ''" class="form-normal-text current-toilet">
+              {{ formData.selectedToilet }}
+            </div>
+            <div v-else class="form-normal-text-slate current-toilet">
+              Toilet will be picked from selected toilets
             </div>
           </div>
           <div class="label-box">
@@ -81,26 +84,26 @@
           </div>
         </div>
       </div>
-      <div v-show="isStartBatchInitialize" class="batch-main-running">
+      <div v-show="formData.isStartBatchInitialize" class="batch-main-running">
         <div class="batch-main-running-label">
           RUNNING...<br />
           WRITING DATA TO DEVICE
         </div>
       </div>
       <div class="batch-main-button">
-        <LongerButton v-show="!isStartBatchInitialize" @click="startBatchInitialize">
+        <LongerButton v-show="!formData.isStartBatchInitialize" @click="startBatchInitialize">
           <template #label>START BATCH INITIALIZE</template>
         </LongerButton>
 
-        <LongerButton v-show="isStartBatchInitialize" @click="stopBatchInitialize">
+        <LongerButton v-show="formData.isStartBatchInitialize" @click="stopBatchInitialize">
           <template #label>STOP</template>
         </LongerButton>
       </div>
     </div>
   </div>
-  <!-- diaLogs -->
-  <NoDeviceDialog v-model="isNoDeviceDialogVisible" />
-  <RenewInitDialog v-model="isRenewInitDialogVisible" />
+  <!-- Dialogs -->
+  <NoDeviceDialog v-model="formData.isNoDeviceDialogVisible" />
+  <RenewInitDialog v-model="formData.isRenewInitDialogVisible" />
 </template>
 
 <script setup lang="ts">
@@ -116,23 +119,47 @@
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
+
   const router = useRouter()
-  // 跳转到单一模式
-  function navigateTo(path: string) {
-    localStorage.setItem('deviceSetupMode', 'single')
-    router.push(path)
-    console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
+
+  // Define an interface to aggregate form data
+  interface SetupFormData {
+    months: string[]
+    intervals: string[]
+    toilets: { name: string; uuid: string }[]
+    detectedDevice: string
+    detectedDeviceStatus: string
+    uuid: string
+    selectedToilet: string
+    isStartBatchInitialize: boolean
+    isNoDeviceDialogVisible: boolean
+    isRenewInitDialogVisible: boolean
+    statusClass: string
   }
 
-  // 生成UUID
-  const uuid = ref(uuidv4())
-  // 检测设备状态逻辑
-  const detectedDeviceStatus = ref('New device')
-  const detectedDevice = ref('COM1 serial')
+  // Initialize form data using the interface
+  const formData = ref<SetupFormData>({
+    months: [],
+    intervals: [],
+    toilets: [],
+    detectedDevice: 'COM1 serial',
+    detectedDeviceStatus: 'New device',
+    uuid: uuidv4(),
+    selectedToilet: '',
+    isStartBatchInitialize: false,
+    isNoDeviceDialogVisible: false,
+    isRenewInitDialogVisible: false,
+    statusClass: ''
+  })
 
-  // 计算当前状态对应的CSS类
+  // Initialize months and intervals from the store
+  const formStore = useFormStore()
+  formData.value.months = formStore.getMonths()
+  formData.value.intervals = formStore.getIntervals()
+
+  // Compute the CSS class based on the device status
   const statusClass = computed(() => {
-    switch (detectedDeviceStatus.value) {
+    switch (formData.value.detectedDeviceStatus) {
       case 'New device':
         return 'status-new'
       case 'Exported Data Found on Disk':
@@ -144,98 +171,99 @@
     }
   })
 
-  // 更新状态的函数
+  formData.value.statusClass = statusClass.value
+
+  // Function to update the device status
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
-      detectedDeviceStatus.value = newStatus
+      formData.value.detectedDeviceStatus = newStatus
+      formData.value.statusClass = statusClass.value
     } else {
       console.warn('Invalid status:', newStatus)
     }
   }
 
-  /**
-   * batch initialize
-   */
-  const isStartBatchInitialize = ref(false)
+  // Navigation function to switch modes
+  function navigateTo(path: string) {
+    localStorage.setItem('deviceSetupMode', 'single')
+    router.push(path)
+    console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
+  }
+
+  // Batch initialize functions
   function startBatchInitialize() {
-    isStartBatchInitialize.value = true
+    formData.value.isStartBatchInitialize = true
     console.log('startBatchInitialize')
   }
 
   function stopBatchInitialize() {
-    isStartBatchInitialize.value = false
+    formData.value.isStartBatchInitialize = false
     console.log('stopBatchInitialize')
   }
 
-  // 控制弹窗可见性的状态
-  const isNoDeviceDialogVisible = ref(false)
-  function openNoDeviceDialog() {
-    isNoDeviceDialogVisible.value = true
-  }
+  // Dialog control functions
+  // function openNoDeviceDialog() {
+  //   formData.value.isNoDeviceDialogVisible = true
+  // }
 
-  const isRenewInitDialogVisible = ref(false)
-  function openRenewInitDialog() {
-    isRenewInitDialogVisible.value = true
-  }
+  // function openRenewInitDialog() {
+  //   formData.value.isRenewInitDialogVisible = true
+  // }
 
-  // 使用Pinia的store管理月份和间隔
-  const formStore = useFormStore()
-  const Months = formStore.getMonths()
-  const Intervals = formStore.getIntervals()
-
-  // 选择厕所
-  const toilets = ref([])
-  const selectToilet = () => {
-    console.log('selectToilet')
-  }
-  const selectedToilet = ref('')
-  const selectCurrentToilet = (toilet: { name: string; uuid: string }) => {
-    selectedToilet.value = toilet.name
-    console.log('selectCurrentToilet', toilet)
-  }
-
-  // 选择月份
-  const selectMonth = () => {
-    console.log('selectMonth')
-  }
-  const selectedMonth = ref('')
-  const selectCurrentMonth = (month: string) => {
-    selectedMonth.value = month
-    console.log('selectCurrentMonth', month)
-  }
-
-  // 选择间隔
-  const selectInterval = () => {
-    console.log('selectInterval')
-  }
-  const selectedInterval = ref('')
-  const selectCurrentInterval = (interval: string) => {
-    selectedInterval.value = interval
-    console.log('selectCurrentInterval', interval)
-  }
-
-  // 获取厕所数据
+  // Fetch toilets data
   const fetchToilet = async () => {
     try {
       const res = await axios.get('/api/toilets')
-      toilets.value = res.data.data
-      console.log(toilets.value)
+      formData.value.toilets = res.data.data
+      console.log(formData.value.toilets)
     } catch (err) {
       console.error(err)
     }
     console.log('selectToilet')
   }
 
-  // 在组件挂载前获取厕所数据
+  // Fetch toilets data before mounting the component
   onBeforeMount(() => {
     fetchToilet()
   })
 
-  // 示例用法
+  // Selection functions for toilet
+  function selectToilet() {
+    console.log('selectToilet')
+  }
+
+  function selectCurrentToilet(toilet: { name: string; uuid: string }) {
+    formData.value.selectedToilet = toilet.name
+    console.log('selectCurrentToilet', toilet)
+  }
+
+  // Selection functions for month
+  function selectMonth() {
+    console.log('selectMonth')
+  }
+
+  function selectCurrentMonth(month: string) {
+    // Assuming you want to store the selected month
+    console.log('selectCurrentMonth', month)
+  }
+
+  // Selection functions for interval
+  function selectInterval() {
+    console.log('selectInterval')
+  }
+
+  function selectCurrentInterval(interval: string) {
+    // Assuming you want to store the selected interval
+    console.log('selectCurrentInterval', interval)
+  }
+
+  // Example usage: Update status after 3 seconds
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)
 </script>
 
-<!-- 移除 <style scoped> 部分 -->
+<style scoped>
+  /* Add your styles here */
+</style>

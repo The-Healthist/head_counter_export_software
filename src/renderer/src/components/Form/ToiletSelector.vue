@@ -28,8 +28,7 @@
 <script setup lang="ts">
   import { defineProps, defineEmits, ref, onMounted, onBeforeUnmount } from 'vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
-
-  const props = defineProps<{
+  defineProps<{
     toilets: { name: string; uuid: string }[]
   }>()
 

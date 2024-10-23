@@ -9,7 +9,7 @@
   </div>
 </template>
 <script setup lang="ts">
-  import LeftNav from '@renderer/components/leftNav.vue'
+  import LeftNav from '@renderer/components/Nav/leftNav.vue'
 </script>
 <style scoped lang="scss">
   .main-layout {
@@ -30,7 +30,7 @@
       align-items: stretch; // 从左到右延展
       justify-content: center; // 从上到下延展
       height: 100%;
-      width: 1040px;
+      width: 100%;
     }
   }
 </style>

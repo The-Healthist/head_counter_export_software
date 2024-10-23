@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <!-- 运行状态 -->
+      <!-- Running Status -->
       <div v-show="isStartBatchExport" class="batch-main-running">
         <div class="batch-main-running-label">
           RUNNING...<br />
@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <!-- 操作按钮 -->
+      <!-- Operation Button -->
       <div class="batch-main-button">
         <NormalButton v-show="!isStartBatchExport" @click="startBatchExport">
           <template #label>EXPORT</template>
@@ -106,7 +106,7 @@
         </NormalButton>
       </div>
     </div>
-    <!-- 弹窗组件 -->
+    <!-- Dialog Component -->
     <NoDeviceDialog v-model="isNoDeviceDialogVisible" />
     <RenewInitDialog v-model="isRenewInitDialogVisible" />
   </div>
@@ -155,17 +155,13 @@
   setupFormData.value.exportedToilets = toilets.value
   setupFormData.value.month = ''
 
-  // 路由实例
   const router = useRouter()
-
-  // 跳转到单一模式
   function navigateTo(path: string) {
     localStorage.setItem('dataExportMode', 'single')
     router.push(path)
     console.log('localStorage.getItem(dataExportMode)', localStorage.getItem('dataExportMode'))
   }
 
-  // 计算当前状态对应的CSS类
   const statusClass = computed(() => {
     switch (setupFormData.value.detectedDeviceStatus) {
       case 'New device':
@@ -179,7 +175,6 @@
     }
   })
 
-  // 更新状态的函数
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
@@ -189,36 +184,25 @@
     }
   }
 
-  /**
-   * Batch export
-   */
+  //Batch export
   const isStartBatchExport = ref(false)
   function startBatchExport() {
     isStartBatchExport.value = true
-    // 添加批处理导出的逻辑
   }
   function stopBatchExport() {
     isStartBatchExport.value = false
     // 添加停止批处理导出的逻辑
   }
 
-  // 控制弹窗可见性的状态
+  // Dialogs
   const isNoDeviceDialogVisible = ref(false)
-  function openNoDeviceDialog() {
-    isNoDeviceDialogVisible.value = true
-  }
-
   const isRenewInitDialogVisible = ref(false)
-  function openRenewInitDialog() {
-    isRenewInitDialogVisible.value = true
-  }
 
-  // 使用 Pinia 的 store 来管理月份和间隔
+  // Months and Intervals
   const formStore = useFormStore()
   const Months = formStore.getMonths()
 
-  // 获取厕所数据
-
+  // Fetch toilets
   const fetchToilet = async () => {
     await axios.get('/api/toilets').then((res) => {
       toilets.value = res.data.data
@@ -226,14 +210,11 @@
     })
     console.log('selectToilet')
   }
-
-  // 在组件挂载前获取厕所数据
   onBeforeMount(() => {
     fetchToilet()
   })
 
-  // 选择厕所
-
+  // Select Toilet
   function selectToilet() {
     console.log('Toilet selector clicked')
   }
@@ -242,8 +223,7 @@
     setupFormData.value.placementToilet = toilet
     console.log('Selected Toilets:', toilets)
   }
-
-  // 选择月份
+  // Select Month
   const selectedMonth = ref('')
   function selectMonth() {
     console.log('selectMonth')
@@ -253,7 +233,7 @@
     console.log('selectCurrentMonth', month)
   }
 
-  // 打开文件系统对话框并选择路径
+  // Open file dialog and select path
   async function openFileDialog() {
     try {
       const selectedPath = await window.api.openFileDialog() // 通过 contextBridge 暴露的 API
@@ -266,7 +246,7 @@
     }
   }
 
-  // 示例用法
+  // Example usage
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)

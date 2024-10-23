@@ -20,7 +20,7 @@
     uuid: string
   }
 
-  const props = defineProps<{
+  defineProps<{
     toilets: Toilet[]
   }>()
 </script>

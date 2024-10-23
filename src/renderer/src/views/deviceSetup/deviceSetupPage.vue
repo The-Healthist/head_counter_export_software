@@ -9,10 +9,10 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ detectedDevice }}
+              {{ formData.detectedDevice }}
             </div>
             <div :class="statusClass">
-              {{ detectedDeviceStatus }}
+              {{ formData.detectedDeviceStatus }}
             </div>
           </div>
           <div class="label-box">
@@ -24,10 +24,9 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ uuid }}
+              {{ formData.deviceUUID }}
             </div>
           </div>
-          <!-- TODO: 让文本可以复制 -->
           <div class="label-box">
             <div class="batch-main-item-label">Random UUID</div>
           </div>
@@ -94,26 +93,40 @@
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
+  // import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue' // 如需使用 Data Path 功能
   import { useFormStore } from '@renderer/stores/form'
   const router = useRouter()
-
   // to batch mode
   function navigateTo(path: string) {
     localStorage.setItem('deviceSetupMode', 'batch')
     router.push(path)
     console.log('localStorage.getItem(deviceSetupMode)', localStorage.getItem('deviceSetupMode'))
   }
+  // Define an interface to aggregate form data
+  interface SetupFormData {
+    dataPath?: string
+    detectedDevice?: string
+    deviceUUID?: string
+    detectedDeviceStatus?: string
+    placementToilet?: { name: string; uuid: string }
+    month?: string
+    interval?: string
+  }
 
-  // UUID
-  const uuid = ref(uuidv4())
+  // Initialize form data
+  const formData = ref<SetupFormData>({
+    dataPath: '',
+    detectedDevice: 'COM1 serial',
+    deviceUUID: uuidv4(),
+    detectedDeviceStatus: 'New device',
+    placementToilet: { name: '', uuid: '' },
+    month: '',
+    interval: ''
+  })
 
-  // 检测设备状态逻辑
-  const detectedDeviceStatus = ref('New device')
-  const detectedDevice = ref('COM1 serial')
-
-  // 计算当前状态对应的CSS类
+  // Compute the CSS class based on the device status
   const statusClass = computed(() => {
-    switch (detectedDeviceStatus.value) {
+    switch (formData.value.detectedDeviceStatus) {
       case 'New device':
         return 'status-new'
       case 'Exported Data Found on Disk':
@@ -125,37 +138,42 @@
     }
   })
 
-  // 更新状态的函数
+  // Function to update the device status
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
-      detectedDeviceStatus.value = newStatus
+      formData.value.detectedDeviceStatus = newStatus
     } else {
       console.warn('Invalid status:', newStatus)
     }
   }
 
-  // 控制弹窗可见性的状态
-  // TODO: 打开没检测到设备的弹窗
+  // Control the visibility of dialogs
   const isNoDeviceDialogVisible = ref(false)
-  function openNoDeviceDialog() {
-    isNoDeviceDialogVisible.value = true
-  }
-
   const isRenewInitDialogVisible = ref(false)
+
+  // function openNoDeviceDialog() {
+  //   isNoDeviceDialogVisible.value = true
+  // }
+
   function openRenewInitDialog() {
     isRenewInitDialogVisible.value = true
   }
 
-  const toilets = ref([])
+  // Fetch toilets data
+  const toilets = ref<{ name: string; uuid: string }[]>([])
   const fetchToilet = async () => {
-    await axios.get('/api/toilets').then((res) => {
+    try {
+      const res = await axios.get('/api/toilets')
       toilets.value = res.data.data
       console.log(toilets.value)
-    })
+    } catch (err) {
+      console.error(err)
+    }
     console.log('selectToilet')
   }
-  // fetch toilet data
+
+  // Fetch toilets data before mounting the component
   onBeforeMount(() => {
     fetchToilet()
   })
@@ -169,31 +187,32 @@
 
   // select toilet
   const isShowToiletSelector = ref(true)
-  const selectedToilet = ref('')
+
   function selectToilet() {
     console.log('selectToilet')
   }
   function selectCurrentToilet(toilet: { name: string; uuid: string }) {
-    selectedToilet.value = toilet.name
+    formData.value.placementToilet = toilet
     console.log('selectCurrentToilet', toilet)
   }
-  // select month
-  const selectedMonth = ref('')
+
+  // Selection functions for month
+
   function selectMonth() {
     console.log('selectMonth')
   }
   function selectCurrentMonth(month: string) {
-    selectedMonth.value = month
+    formData.value.month = month
     console.log('selectCurrentMonth', month)
   }
 
-  // select interval
-  const selectedInterval = ref('')
+  // Selection functions for interval
+
   function selectInterval() {
     console.log('selectInterval')
   }
   function selectCurrentInterval(interval: string) {
-    selectedInterval.value = interval
+    formData.value.interval = interval
     console.log('selectCurrentInterval', interval)
   }
 
@@ -201,5 +220,3 @@
     updateStatus('Exported Data Found on Disk')
   }, 3000)
 </script>
-
-<!-- 移除 <style scoped> 部分 -->

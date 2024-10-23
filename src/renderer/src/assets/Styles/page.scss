@@ -1,6 +1,6 @@
 /* global.scss */
 
-/* 通用页面样式 */
+/* 最外面路由页面 */
 .data-export-page,
 .setup-page {
   width: 100%;
@@ -17,7 +17,7 @@
   z-index: 3;
 }
 
-/* 通用批处理主区域 */
+/* batch main */
 .batch-main {
   width: 517px;
   height: auto;
@@ -27,7 +27,7 @@
   gap: 40px;
 }
 
-/* 通用表单样式 */
+/* form */
 .batch-main-form {
   display: flex;
   flex-direction: column;
@@ -36,12 +36,13 @@
   align-self: stretch;
   position: relative;
 
+  // form item 每一行
   .batch-main-item {
     display: flex;
     align-items: stretch;
     flex-direction: row-reverse;
     gap: 20px;
-
+    // label 盒子
     .label-box {
       position: relative;
       display: flex;
@@ -64,7 +65,7 @@
       line-height: normal;
       white-space: nowrap;
     }
-
+    // 右边内容盒子
     .batch-main-item-right {
       display: flex;
       width: 372px;
@@ -87,7 +88,7 @@
   }
 }
 
-/* 通用文本样式 */
+/* form text */
 .form-normal-text {
   color: #333;
   font-family: Inter;
@@ -95,9 +96,19 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  
+}
+.form-normal-text-slate {
+  
+  color: #CCC;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
-/* 根据状态应用不同的样式 */
+/* setup device status */
 .status-new {
   color: #ccc;
   font-family: Inter;
@@ -125,7 +136,7 @@
   line-height: normal;
 }
 
-/* 通用按钮样式 */
+/* button */
 .batch-main-button {
   display: flex;
   width: 100%;
@@ -136,6 +147,8 @@
   gap: 10px;
 
 }
+
+/* running status */
 .batch-main-running {
   display: flex;
   width: 100%;

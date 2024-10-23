@@ -7,11 +7,14 @@
       <div class="batch-main-form">
         <!-- Data Path -->
         <div class="batch-main-item">
-          <div class="batch-main-item-right">
-            <FormSelectButton>
-              <template #form-select-button-label>Select Data Path...</template>
+          <div class="batch-main-item-right" style="cursor: pointer" @click="openFileDialog">
+            <FormSelectButton v-if="formData.dataPath === ''">
+              <template #form-select-button-label>Select...</template>
             </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="Select" />
+            <div v-else>
+              <div class="form-normal-text">{{ formData.dataPath }}</div>
+            </div>
+            <img src="@renderer/assets/form/select.svg" alt="Select Data Path" />
           </div>
           <div class="label-box">
             <div class="batch-main-item-label">Data Path</div>
@@ -22,10 +25,10 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ detectedDevice }}
+              {{ formData.detectedDevice }}
             </div>
             <div :class="statusClass">
-              {{ detectedDeviceStatus }}
+              {{ formData.detectedDeviceStatus }}
             </div>
           </div>
           <div class="label-box">
@@ -37,16 +40,15 @@
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <div class="form-normal-text">
-              {{ uuid }}
+              {{ formData.deviceUUID }}
             </div>
           </div>
-          <!-- TODO: 让文本可以复制 -->
           <div class="label-box">
             <div class="batch-main-item-label">Device UUID</div>
           </div>
         </div>
 
-        <!-- Toilet -->
+        <!-- Placement Toilet -->
         <div class="batch-main-item">
           <ToiletSelector
             :toilets="toilets"
@@ -74,7 +76,7 @@
       <!-- Init Button -->
       <div class="batch-main-button">
         <NormalButton @click="openRenewInitDialog">
-          <template #label>INITIALIZE</template>
+          <template #label>Export</template>
         </NormalButton>
       </div>
     </div>
@@ -95,28 +97,40 @@
   import { useRouter } from 'vue-router'
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
-  import IntervalSelector from '@renderer/components/Form/IntervalSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
-
   const router = useRouter()
 
-  // 跳转到批处理模式
+  // Navigate to batch mode
   function navigateTo(path: string) {
     localStorage.setItem('dataExportMode', 'batch')
     router.push(path)
     console.log('localStorage.getItem(dataExportMode)', localStorage.getItem('dataExportMode'))
   }
 
-  // 生成UUID
-  const uuid = ref(uuidv4())
+  // Define interface to collect form data
+  interface SetupFormData {
+    dataPath?: string
+    detectedDevice?: string
+    deviceUUID?: string
+    detectedDeviceStatus?: string
+    placementToilet?: { name: string; uuid: string }
+    month?: string
+  }
 
-  // 检测设备状态逻辑
-  const detectedDeviceStatus = ref('New device')
-  const detectedDevice = ref('COM1 serial')
+  // Initialize form data
+  const formData = ref<SetupFormData>({
+    dataPath: '',
+    detectedDevice: 'COM1 serial',
+    deviceUUID: uuidv4(),
+    detectedDeviceStatus: 'New device',
+    placementToilet: { name: '', uuid: '' },
+    month: ''
+  })
+  const toilets = ref<{ name: string; uuid: string }[]>([])
 
-  // 计算当前状态对应的CSS类
+  // Calculate the CSS class corresponding to the current status
   const statusClass = computed(() => {
-    switch (detectedDeviceStatus.value) {
+    switch (formData.value.detectedDeviceStatus) {
       case 'New device':
         return 'status-new'
       case 'Exported Data Found on Disk':
@@ -128,29 +142,25 @@
     }
   })
 
-  // 更新状态的函数
+  // Update status function
   function updateStatus(newStatus: string) {
     const validStatuses = ['New device', 'Exported Data Found on Disk', 'No Exported Data Found']
     if (validStatuses.includes(newStatus)) {
-      detectedDeviceStatus.value = newStatus
+      formData.value.detectedDeviceStatus = newStatus
     } else {
       console.warn('Invalid status:', newStatus)
     }
   }
 
-  // 控制弹窗可见性的状态
+  // Control the visibility of the dialog
   const isNoDeviceDialogVisible = ref(false)
-  function openNoDeviceDialog() {
-    isNoDeviceDialogVisible.value = true
-  }
 
   const isRenewInitDialogVisible = ref(false)
   function openRenewInitDialog() {
     isRenewInitDialogVisible.value = true
   }
 
-  // 获取厕所数据
-  const toilets = ref<{ name: string; uuid: string }[]>([])
+  // Get toilet data
   const fetchToilet = async () => {
     try {
       const res = await axios.get('/api/toilets')
@@ -162,53 +172,49 @@
     console.log('selectToilet')
   }
 
-  // 在组件挂载前获取厕所数据
+  // Get toilet data before mounting the component
   onBeforeMount(() => {
     fetchToilet()
   })
 
-  /*
-  form: 使用pinia的store来管理月份和间隔
-  */
+  // Use pinia's store to manage months and intervals
   const formStore = useFormStore()
   const Months = formStore.getMonths()
-  const Intervals = formStore.getIntervals()
 
-  // 选择厕所
-  const isShowToiletSelector = ref(true)
-  const selectedToilet = ref('')
+  // Select toilet
   function selectToilet() {
     console.log('selectToilet')
   }
   function selectCurrentToilet(toilet: { name: string; uuid: string }) {
-    selectedToilet.value = toilet.name
+    formData.value.placementToilet = toilet
     console.log('selectCurrentToilet', toilet)
   }
 
-  // 选择月份
-  const selectedMonth = ref('')
+  // Select month
+
   function selectMonth() {
     console.log('selectMonth')
   }
   function selectCurrentMonth(month: string) {
-    selectedMonth.value = month
+    formData.value.month = month
     console.log('selectCurrentMonth', month)
   }
 
-  // 选择间隔
-  const selectedInterval = ref('')
-  function selectInterval() {
-    console.log('selectInterval')
-  }
-  function selectCurrentInterval(interval: string) {
-    selectedInterval.value = interval
-    console.log('selectCurrentInterval', interval)
+  // Open file system dialog and select path
+  async function openFileDialog() {
+    try {
+      const selectedPath = await window.api.openFileDialog() // 通过 contextBridge 暴露的 API
+      if (selectedPath) {
+        formData.value.dataPath = selectedPath
+        console.log('Selected Path:', selectedPath)
+      }
+    } catch (error) {
+      console.error('Error selecting path:', error)
+    }
   }
 
-  // 示例用法
+  // Example usage
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)
 </script>
-
-<!-- 移除 <style scoped> 部分 -->

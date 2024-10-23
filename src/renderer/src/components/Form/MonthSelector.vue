@@ -1,5 +1,5 @@
 <template>
-  <div class="selector-wrapper" ref="selectorWrapper">
+  <div ref="selectorWrapper" class="selector-wrapper">
     <!-- 主选择框 -->
     <div class="select-box" @click="selectMonth">
       <FormSelectButton v-show="selectedMonth === ''">
@@ -26,8 +26,7 @@
 <script setup lang="ts">
   import { defineProps, defineEmits, ref, onMounted, onBeforeUnmount } from 'vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
-
-  const props = defineProps<{
+  defineProps<{
     Months: string[]
   }>()
 
