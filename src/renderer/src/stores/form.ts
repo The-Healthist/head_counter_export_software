@@ -4,18 +4,18 @@ export const useFormStore = defineStore('form', {
   state: () => ({
     count: 0,
     months: [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      'Jan,2025',
+      'Feb,2025',
+      'Mar,2025',
+      'Apr,2025',
+      'May,2025',
+      'Jun,2025',
+      'Jul,2025',
+      'Aug,2025',
+      'Sep,2025',
+      'Oct,2025',
+      'Nov,2025',
+      'Dec,2025'
     ],
     intervals: [
       '10 Min',

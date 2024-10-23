@@ -69,18 +69,6 @@
             <div class="batch-main-item-label">Month</div>
           </div>
         </div>
-
-        <!-- Report Interval -->
-        <div class="batch-main-item">
-          <IntervalSelector
-            :Intervals="Intervals"
-            @select-interval="selectInterval"
-            @select-current-interval="selectCurrentInterval"
-          />
-          <div class="label-box">
-            <div class="batch-main-item-label">Report Interval</div>
-          </div>
-        </div>
       </div>
 
       <!-- Init Button -->

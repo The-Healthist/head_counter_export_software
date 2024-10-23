@@ -5,25 +5,13 @@
     </ModeSwitchButton>
     <div class="batch-main">
       <div class="batch-main-form">
-        <!-- Month -->
-        <div class="batch-main-item">
-          <MonthSelector
-            :Months="Months"
-            @select-month="selectMonth"
-            @select-current-month="selectCurrentMonth"
-          />
-          <div class="label-box">
-            <div class="batch-main-item-label">Month</div>
-          </div>
-        </div>
-
         <!-- Data Path -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
             <FormSelectButton>
               <template #form-select-button-label>Select...</template>
             </FormSelectButton>
-            <img src="@renderer/assets/form/select.svg" alt="" />
+            <img src="@renderer/assets/form/select.svg" alt="Select Data Path" />
           </div>
           <div class="label-box">
             <div class="batch-main-item-label">Data Path</div>
@@ -48,19 +36,19 @@
         <!-- Device UUID -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
-            <div class="form-normal-text">
+            <div class="form-normal-text" @click="copyUUID">
               {{ uuid }}
             </div>
           </div>
-          <!-- TODO: 让文本可以复制 -->
+          <!-- 实现文本可复制 -->
           <div class="label-box">
             <div class="batch-main-item-label">Device UUID</div>
           </div>
         </div>
 
-        <!-- Placement Toilet -->
+        <!-- Placement Toilet (多选) -->
         <div class="batch-main-item">
-          <ToiletSelector
+          <ToiletSelectorMultiple
             :toilets="toilets"
             @select-toilet="selectToilet"
             @select-current-toilet="selectCurrentToilet"
@@ -69,8 +57,21 @@
             <div class="batch-main-item-label">Placement Toilet</div>
           </div>
         </div>
+
+        <!-- Month -->
+        <div class="batch-main-item">
+          <MonthSelector
+            :Months="Months"
+            @select-month="selectMonth"
+            @select-current-month="selectCurrentMonth"
+          />
+          <div class="label-box">
+            <div class="batch-main-item-label">Month</div>
+          </div>
+        </div>
       </div>
 
+      <!-- 运行状态 -->
       <div v-show="isStartBatchExport" class="batch-main-running">
         <div class="batch-main-running-label">
           RUNNING...<br />
@@ -85,6 +86,7 @@
         </div>
       </div>
 
+      <!-- 操作按钮 -->
       <div class="batch-main-button">
         <NormalButton v-show="!isStartBatchExport" @click="startBatchExport">
           <template #label>EXPORT</template>
@@ -94,9 +96,10 @@
         </NormalButton>
       </div>
     </div>
+    <!-- 弹窗组件 -->
+    <NoDeviceDialog v-model="isNoDeviceDialogVisible" />
+    <RenewInitDialog v-model="isRenewInitDialogVisible" />
   </div>
-  <NoDeviceDialog v-model="isNoDeviceDialogVisible" />
-  <RenewInitDialog v-model="isRenewInitDialogVisible" />
 </template>
 
 <script setup lang="ts">
@@ -109,10 +112,11 @@
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
   import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
-  import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
+  import ToiletSelectorMultiple from '@renderer/components/Form/ToiletSelectorMultiple.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
   import { useFormStore } from '@renderer/stores/form'
 
+  // 路由实例
   const router = useRouter()
 
   // 跳转到单一模式
@@ -183,7 +187,7 @@
   // const Intervals = formStore.getIntervals() // 如果不需要间隔可以注释
 
   // 获取厕所数据
-  const toilets = ref([])
+  const toilets = ref<string[]>([])
   const fetchToilet = async () => {
     try {
       const res = await axios.get('/api/toilets')
@@ -199,14 +203,17 @@
     fetchToilet()
   })
 
-  // 选择厕所
-  const selectedToilet = ref('')
+  // 选择厕所 (多选)
+  const selectedToilet = ref<string[]>([]) // 修改为数组
+
   function selectToilet() {
-    console.log('selectToilet')
+    console.log('Toilet selector clicked')
   }
-  function selectCurrentToilet(toilet: string) {
-    selectedToilet.value = toilet
-    console.log('selectCurrentToilet', toilet)
+
+  function selectCurrentToilet(toilets: string[]) {
+    // 接收数组
+    selectedToilet.value = toilets
+    console.log('Selected Toilets:', toilets)
   }
 
   // 选择月份
@@ -219,10 +226,21 @@
     console.log('selectCurrentMonth', month)
   }
 
+  // 复制 UUID 到剪贴板
+  function copyUUID() {
+    navigator.clipboard
+      .writeText(uuid.value)
+      .then(() => {
+        console.log('UUID copied to clipboard')
+        // 可以添加一个提示用户复制成功的通知
+      })
+      .catch((err) => {
+        console.error('Failed to copy UUID:', err)
+      })
+  }
+
   // 示例用法
   setTimeout(() => {
     updateStatus('Exported Data Found on Disk')
   }, 3000)
 </script>
-
-<!-- 移除 <style scoped> 部分 -->
