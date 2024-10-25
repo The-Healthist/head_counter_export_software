@@ -44,12 +44,14 @@
         <!-- Detected Device -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
-            <div class="form-normal-text">
+            <div v-if="formData.detectedDevice !== ''" class="form-normal-text">
               {{ formData.detectedDevice }}
             </div>
-            <div :class="formData.statusClass">
+            <div v-else class="form-normal-text-slate">Device will be detected automatically</div>
+            <!-- 设备状态 -->
+            <!-- <div :class="formData.statusClass">
               {{ formData.detectedDeviceStatus }}
-            </div>
+            </div> -->
           </div>
           <div class="label-box">
             <div class="batch-main-item-label">Current Device</div>
@@ -59,9 +61,10 @@
         <!-- Current UUID -->
         <div class="batch-main-item">
           <div class="batch-main-item-right">
-            <div class="form-normal-text">
+            <div v-if="formData.uuid !== ''" class="form-normal-text">
               {{ formData.uuid }}
             </div>
+            <div v-else class="form-normal-text-slate">UUID will generate when device detected</div>
           </div>
           <!-- TODO: 让文本可以复制 -->
           <div class="label-box">
@@ -113,7 +116,6 @@
   import LongerButton from '@renderer/components/Button/LongerButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
-  import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
@@ -142,9 +144,9 @@
     months: [],
     intervals: [],
     toilets: [],
-    detectedDevice: 'COM1 serial',
-    detectedDeviceStatus: 'New device',
-    uuid: uuidv4(),
+    detectedDevice: '',
+    detectedDeviceStatus: '',
+    uuid: '',
     selectedToilet: '',
     isStartBatchInitialize: false,
     isNoDeviceDialogVisible: false,
@@ -194,11 +196,17 @@
   // Batch initialize functions
   function startBatchInitialize() {
     formData.value.isStartBatchInitialize = true
+    formData.value.detectedDevice = 'COM1 serial'
+    formData.value.detectedDeviceStatus = 'New device'
+    formData.value.uuid = uuidv4()
     console.log('startBatchInitialize')
   }
 
   function stopBatchInitialize() {
     formData.value.isStartBatchInitialize = false
+    formData.value.detectedDevice = ''
+    formData.value.detectedDeviceStatus = ''
+    formData.value.uuid = ''
     console.log('stopBatchInitialize')
   }
 
@@ -213,14 +221,44 @@
 
   // Fetch toilets data
   const fetchToilet = async () => {
-    try {
-      const res = await axios.get('/api/toilets')
-      formData.value.toilets = res.data.data
-      console.log(formData.value.toilets)
-    } catch (err) {
-      console.error(err)
-    }
-    console.log('selectToilet')
+    // try {
+    //   const res = await axios.get('/api/toilets')
+    //   formData.value.toilets = res.data.data
+    //   console.log(formData.value.toilets)
+    // } catch (err) {
+    //   console.error(err)
+    // }
+    // console.log('selectToilet')
+    formData.value.toilets = [
+      {
+        name: 'Shek Kip Mei, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c1bf55e'
+      },
+      {
+        name: '80 Tat Chee Ave, Kowloon Tong, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c2bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c3bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c4bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c5bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c6bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c7bf55e'
+      }
+    ]
   }
 
   // Fetch toilets data before mounting the component

@@ -1,14 +1,13 @@
 <template>
   <div ref="selectorWrapper" class="selector-wrapper">
-    <!-- 主选择框 -->
-    <!-- <div class="select-box"></div> -->
-    <!-- 下拉选项 -->
     <div v-if="toilets.length > 0" class="exported-box">
       <div v-for="Toilet in toilets" :key="Toilet.uuid" class="exported-box-item">
         {{ Toilet.name }}
       </div>
     </div>
-    <div v-else class="exported-box-item">Waiting for toilets...</div>
+    <div v-else class="exported-box">
+      <div class="exported-box-item">Waiting...</div>
+    </div>
   </div>
 </template>
 
@@ -36,7 +35,7 @@
     top: 0;
     left: 0;
     width: 372px;
-    max-height: 219px;
+    height: 219px;
     padding: 10px 20px 10px 15px;
     border: 1px solid #ccc;
     background-color: #fff;

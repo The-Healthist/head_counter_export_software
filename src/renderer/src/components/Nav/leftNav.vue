@@ -140,6 +140,7 @@
       padding: 33px 7px;
       align-items: center;
       gap: 10px;
+      width: 100%;
       cursor: pointer;
       position: relative; /* 添加定位属性 */
       z-index: 20; /* 设置默认层级 */

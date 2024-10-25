@@ -74,7 +74,7 @@
         </div>
         <!-- exported toilets -->
         <div class="batch-main-item">
-          <ExportedBox :toilets="toilets" />
+          <ExportedBox :toilets="HaveExportedToilets" />
           <div class="label-box">
             <div class="batch-main-item-label">Exported Toilets</div>
           </div>
@@ -120,7 +120,6 @@
   import NormalButton from '@renderer/components/Button/NormalButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
   import RenewInitDialog from '@renderer/components/Dialog/RenewInitDialog.vue'
-  import axios from '@renderer/utils/axios'
   import { useRouter } from 'vue-router'
   import ToiletSelector from '@renderer/components/Form/ToiletSelector.vue'
   import MonthSelector from '@renderer/components/Form/MonthSelector.vue'
@@ -148,6 +147,7 @@
   })
 
   const toilets = ref<{ name: string; uuid: string }[]>([])
+  const HaveExportedToilets = ref<{ name: string; uuid: string }[]>([])
   setupFormData.value.deviceUUID = uuidv4()
   setupFormData.value.detectedDeviceStatus = 'New device'
   setupFormData.value.detectedDevice = 'COM1 serial'
@@ -188,9 +188,11 @@
   const isStartBatchExport = ref(false)
   function startBatchExport() {
     isStartBatchExport.value = true
+    HaveExportedToilets.value = toilets.value
   }
   function stopBatchExport() {
     isStartBatchExport.value = false
+    HaveExportedToilets.value = []
     // 添加停止批处理导出的逻辑
   }
 
@@ -204,11 +206,36 @@
 
   // Fetch toilets
   const fetchToilet = async () => {
-    await axios.get('/api/toilets').then((res) => {
-      toilets.value = res.data.data
-      console.log(toilets.value)
-    })
-    console.log('selectToilet')
+    toilets.value = [
+      {
+        name: 'Shek Kip Mei, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c1bf55e'
+      },
+      {
+        name: '80 Tat Chee Ave, Kowloon Tong, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c2bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c3bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c4bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Fu Mei St, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c5bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c6bf55e'
+      },
+      {
+        name: 'Wang Tau Hom Estate Wang Lai House, Wang Tau Hom, Hong Kong',
+        uuid: '4c8f5398-b295-41fb-87f2-c8805c7bf55e'
+      }
+    ]
   }
   onBeforeMount(() => {
     fetchToilet()
