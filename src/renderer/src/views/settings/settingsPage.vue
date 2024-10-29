@@ -1,8 +1,5 @@
 <template>
   <div class="settings-page">
-    <ModeSwitchButton>
-      <template #batch-mode-text>Batch Mode</template>
-    </ModeSwitchButton>
     <div class="settings-main">
       <div class="form">
         <!-- Printer Item -->
@@ -31,21 +28,11 @@
 
 <script setup lang="ts">
   import { ref } from 'vue'
-  import ModeSwitchButton from '@renderer/components/Button/ModeSwitchButton.vue'
   import FormSelectButton from '@renderer/components/Button/FormSelectButton.vue'
   import NoDeviceDialog from '@renderer/components/Dialog/NoDeviceDialog.vue'
 
   // 控制弹窗可见性的状态
   const isNoDeviceDialogVisible = ref(false)
-  // function openNoDeviceDialog() {
-  //   isNoDeviceDialogVisible.value = true
-  // }
-
-  // const isSaveSettingsDialogVisible = ref(false)
-  // function saveSettings() {
-  //   // 这里可以添加保存设置的逻辑，比如表单验证和提交
-  //   isSaveSettingsDialogVisible.value = true
-  // }
 </script>
 
 <style scoped lang="scss">
